@@ -18,6 +18,7 @@ import { AchievementsView } from './components/AchievementsView';
 import { AddPlateModal } from './components/AddPlateModal';
 import { StateDetailsModal } from './components/StateDetailsModal';
 import { AchievementToast } from './components/AchievementToast';
+import { ShareModal } from './components/ShareModal';
 
 import {
   Car,
@@ -29,7 +30,7 @@ import {
   VolumeX,
   Languages,
   RotateCcw,
-  Sparkles,
+  Share2,
 } from 'lucide-react';
 
 const REGION_COLORS: Record<string, string> = {
@@ -113,6 +114,13 @@ export default function App() {
   const [selectedRecordForEdit, setSelectedRecordForEdit] = useState<SpottedRecord | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState<boolean>(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [shareTargetState, setShareTargetState] = useState<StateInfo | null>(null);
+
+  const handleOpenShareModal = (st?: StateInfo | null) => {
+    setShareTargetState(st || null);
+    setIsShareModalOpen(true);
+  };
 
   // Achievement unlock tracker
   const [unlockedToast, setUnlockedToast] = useState<Achievement | null>(null);
@@ -267,55 +275,6 @@ export default function App() {
     }
   };
 
-  const handleSeedDemoData = () => {
-    const now = new Date();
-    const demoData: Record<string, SpottedRecord> = {
-      CA: {
-        stateId: 'CA',
-        spottedAt: new Date(now.getTime() - 86400000 * 4).toISOString(),
-        location: 'Pacific Coast Highway, Big Sur',
-        latitude: 36.2704,
-        longitude: -121.8081,
-        notes: 'קבריולט מוסטנג כחולה מול האוקיינוס!',
-      },
-      NV: {
-        stateId: 'NV',
-        spottedAt: new Date(now.getTime() - 86400000 * 3).toISOString(),
-        location: 'Las Vegas Strip',
-        latitude: 36.1147,
-        longitude: -115.1728,
-        notes: 'ליד המזרקות של בלאג׳יו',
-      },
-      AZ: {
-        stateId: 'AZ',
-        spottedAt: new Date(now.getTime() - 86400000 * 2).toISOString(),
-        location: 'Route 66, Seligman',
-        latitude: 35.3256,
-        longitude: -112.8763,
-        notes: 'דיינר קלאסי של שנות ה-50',
-      },
-      UT: {
-        stateId: 'UT',
-        spottedAt: new Date(now.getTime() - 86400000 * 1).toISOString(),
-        location: 'Zion National Park',
-        latitude: 37.2982,
-        longitude: -113.0263,
-        notes: 'ג׳יפ רנגלר מכוסה באבק אדום',
-      },
-      NY: {
-        stateId: 'NY',
-        spottedAt: new Date(now.getTime() - 86400000 * 0.5).toISOString(),
-        location: 'I-80 Highway Rest Area',
-        latitude: 40.7128,
-        longitude: -74.006,
-        notes: 'משפחה שנוסעת לטיול חוף אל חוף',
-      },
-    };
-
-    setSpottedRecords(demoData);
-    checkForNewAchievements(demoData);
-    sounds.playAchievementSound();
-  };
 
   const foundCount = Object.keys(spottedRecords).length;
   const remainingCount = 50 - foundCount;
@@ -351,17 +310,15 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-1">
-            {/* Seed demo data button (if empty) */}
-            {foundCount === 0 && (
-              <button
-                type="button"
-                onClick={handleSeedDemoData}
-                title={settings.language === 'he' ? 'טען דוגמה' : 'Load Demo'}
-                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
-              >
-                <Sparkles className="w-4 h-4" />
-              </button>
-            )}
+            {/* Share Progress Button */}
+            <button
+              type="button"
+              onClick={() => handleOpenShareModal(null)}
+              title={settings.language === 'he' ? 'שתף תמונת התקדמות' : 'Share Graphic Progress'}
+              className="p-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-xl transition-colors"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
 
             {/* Language Toggle */}
             <button
@@ -436,6 +393,22 @@ export default function App() {
                       className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-emerald-400 transition-all duration-500 shadow-2xs"
                       style={{ width: `${percentComplete}%` }}
                     />
+                  </div>
+
+                  {/* Clickable Share Progress Link below progress bar */}
+                  <div className="mt-2.5 pt-1.5 flex items-center justify-end">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenShareModal(null)}
+                      className="text-xs font-extrabold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 group transition-colors cursor-pointer"
+                    >
+                      <span>
+                        {settings.language === 'he' ? 'שתף את ההתקדמות שלך' : 'Share your progress'}
+                      </span>
+                      <span className="group-hover:translate-x-1 transition-transform rtl:group-hover:-translate-x-1">
+                        {settings.language === 'he' ? '←' : '→'}
+                      </span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -726,6 +699,9 @@ export default function App() {
           setIsDetailsModalOpen(false);
           setIsAddModalOpen(true);
         }}
+        onShare={(st) => {
+          handleOpenShareModal(st);
+        }}
         language={settings.language}
       />
 
@@ -740,6 +716,18 @@ export default function App() {
         }}
         onSave={handleSaveRecord}
         onDelete={handleDeleteRecord}
+        language={settings.language}
+      />
+
+      {/* Share Graphic Card Modal */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => {
+          setIsShareModalOpen(false);
+          setShareTargetState(null);
+        }}
+        spottedRecords={spottedRecords}
+        targetState={shareTargetState}
         language={settings.language}
       />
 

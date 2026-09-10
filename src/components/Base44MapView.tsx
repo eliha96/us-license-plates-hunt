@@ -20,9 +20,10 @@ const REGIONS_INFO = [
 
 interface Base44MapViewProps {
   spottedRecords: Record<string, SpottedRecord>;
-  onSelectState: (state: StateInfo) => void;
+  onSelectState?: (state: StateInfo) => void;
   selectedStateId?: string | null;
   language?: 'he' | 'en';
+  isStatic?: boolean;
 }
 
 export const Base44MapView: React.FC<Base44MapViewProps> = ({
@@ -30,6 +31,7 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
   onSelectState,
   selectedStateId,
   language = 'he',
+  isStatic = false,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -102,7 +104,7 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
 
     // Detect small screen to set responsive default zoom
     const isSmall = window.innerWidth < 640;
-    const initialZoom = isSmall ? 3.4 : 4;
+    const initialZoom = isStatic ? 3.6 : isSmall ? 3.4 : 4;
 
     const map = L.map(mapContainerRef.current, {
       center: [37.8, -96.9],
@@ -117,11 +119,12 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
       doubleClickZoom: false,
     });
 
-    // Clean light gray basemap without watermarks or API keys (Esri Canvas Light Gray)
+    // Clean light gray basemap with crossOrigin enabled for image capture
     L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 16,
+        crossOrigin: true,
         attribution: '&copy; Esri, DeLorme, NAVTEQ',
       }
     ).addTo(map);
@@ -132,7 +135,7 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, []);
+  }, [isStatic]);
 
   // Update GeoJSON layer when geoData or spottedRecords change
   useEffect(() => {
@@ -215,7 +218,7 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
           }
         },
         click: () => {
-          if (state) {
+          if (state && onSelectState) {
             onSelectState(state);
           }
         },
@@ -241,36 +244,38 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
 
   const handleReset = () => {
     const isSmall = window.innerWidth < 640;
-    mapInstanceRef.current?.setView([37.8, -96.9], isSmall ? 3.4 : 4);
+    mapInstanceRef.current?.setView([37.8, -96.9], isStatic ? 3.6 : isSmall ? 3.4 : 4);
   };
 
   return (
     <div className="space-y-2">
       {/* Modern Region Color Pills Header */}
-      <div className="flex items-center justify-between gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
-        {REGIONS_INFO.map((reg) => {
-          const countInReg = Object.values(STATES_DATA).filter(
-            (s) => s.region === reg.id && spottedRecords[s.id]
-          ).length;
-          const totalInReg = Object.values(STATES_DATA).filter((s) => s.region === reg.id).length;
+      {!isStatic && (
+        <div className="flex items-center justify-between gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+          {REGIONS_INFO.map((reg) => {
+            const countInReg = Object.values(STATES_DATA).filter(
+              (s) => s.region === reg.id && spottedRecords[s.id]
+            ).length;
+            const totalInReg = Object.values(STATES_DATA).filter((s) => s.region === reg.id).length;
 
-          return (
-            <div
-              key={reg.id}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 border border-slate-200/80 shadow-2xs text-[11px] font-bold text-slate-700 shrink-0"
-            >
-              <span
-                className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
-                style={{ backgroundColor: reg.color }}
-              />
-              <span>{language === 'he' ? reg.nameHe : reg.nameEn}</span>
-              <span className="text-[10px] text-slate-400 font-semibold">
-                {countInReg}/{totalInReg}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+            return (
+              <div
+                key={reg.id}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 border border-slate-200/80 shadow-2xs text-[11px] font-bold text-slate-700 shrink-0"
+              >
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
+                  style={{ backgroundColor: reg.color }}
+                />
+                <span>{language === 'he' ? reg.nameHe : reg.nameEn}</span>
+                <span className="text-[10px] text-slate-400 font-semibold">
+                  {countInReg}/{totalInReg}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Main Map Card */}
       <div className="relative rounded-3xl overflow-hidden border border-slate-200/80 shadow-sm isolate bg-slate-100">
@@ -278,7 +283,7 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
         <div
           ref={mapContainerRef}
           id="base44-leaflet-map-element"
-          className="w-full h-[380px] sm:h-[420px] bg-slate-50"
+          className={`w-full ${isStatic ? 'h-[360px]' : 'h-[380px] sm:h-[420px]'} bg-slate-50`}
         />
 
         {/* Loading Overlay */}
@@ -322,13 +327,15 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
           </button>
         </div>
 
-        {/* Map Hint: tap to discover */}
-        <div className="absolute bottom-2.5 right-3 z-20 pointer-events-none flex items-center gap-1.5 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-full text-[11px] font-semibold text-slate-600 border border-slate-200/80 shadow-2xs">
-          <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-          <span>
-            {language === 'he' ? 'לחץ על מדינה לפרטים' : 'Tap a state for details'}
-          </span>
-        </div>
+        {/* Map Hint */}
+        {!isStatic && (
+          <div className="absolute bottom-2.5 right-3 z-20 pointer-events-none flex items-center gap-1.5 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-full text-[11px] font-semibold text-slate-600 border border-slate-200/80 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+            <span>
+              {language === 'he' ? 'לחץ על מדינה לפרטים' : 'Tap a state for details'}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

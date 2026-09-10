@@ -12,6 +12,7 @@ import {
   Sparkles,
   Lock,
   Plus,
+  Share2,
 } from 'lucide-react';
 
 interface StateDetailsModalProps {
@@ -21,6 +22,7 @@ interface StateDetailsModalProps {
   onClose: () => void;
   onEdit: (state: StateInfo) => void;
   onLogNew: (state: StateInfo) => void;
+  onShare?: (state: StateInfo) => void;
   language?: 'he' | 'en';
 }
 
@@ -38,6 +40,7 @@ export const StateDetailsModal: React.FC<StateDetailsModalProps> = ({
   onClose,
   onEdit,
   onLogNew,
+  onShare,
   language = 'he',
 }) => {
   if (!isOpen || !state) return null;
@@ -278,6 +281,18 @@ export const StateDetailsModal: React.FC<StateDetailsModalProps> = ({
 
           {/* Actions */}
           <div className="pt-2 flex items-center gap-2">
+            {onShare && (
+              <button
+                type="button"
+                onClick={() => onShare(state)}
+                title={language === 'he' ? 'שתף כרטיס מעוצב' : 'Share Graphic Card'}
+                className="py-3 px-3.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs sm:text-sm border border-indigo-200 flex items-center justify-center gap-1.5 transition-all active:scale-95 shrink-0"
+              >
+                <Share2 className="w-4 h-4 text-indigo-600" />
+                <span>{language === 'he' ? 'שתף תמונה' : 'Share Card'}</span>
+              </button>
+            )}
+
             {isSpotted ? (
               <button
                 type="button"
