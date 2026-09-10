@@ -1,0 +1,11 @@
+{
+  "name": "US License Plate Road Trip Game",
+  "description": "Interactive US road trip game to spot, photograph, and log license plates from all 50 states with an interactive map, achievements, and statistics.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
