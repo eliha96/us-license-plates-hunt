@@ -26,15 +26,17 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   const hiddenCardRef = useRef<HTMLDivElement | null>(null);
 
-  // Sync default card type when opening modal or selecting state
+  // Sync default card type and photo visual mode when opening modal or selecting state
   useEffect(() => {
     if (targetState) {
       setCardType('plate');
+      const hasPhoto = Boolean(spottedRecords[targetState.id]?.photoUrl);
+      setPlateVisualMode(hasPhoto ? 'photo' : 'graphic');
     } else {
       setCardType('summary');
+      setPlateVisualMode('graphic');
     }
-    setPlateVisualMode('graphic');
-  }, [targetState, isOpen]);
+  }, [targetState, isOpen, spottedRecords]);
 
   if (!isOpen) return null;
 
