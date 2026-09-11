@@ -499,7 +499,7 @@ export default function App() {
                       </span>
                     )}
                   </div>
-                  {canadaUnlocked ? (
+                  {canadaUnlocked && (
                     <>
                       <div className="h-1.5 rounded-full bg-slate-200/80 overflow-hidden my-1">
                         <div
@@ -519,10 +519,6 @@ export default function App() {
                           : `Spotted ${canadaSpottedCount} of 9`}
                       </span>
                     </>
-                  ) : (
-                    <span className="text-[10px] font-bold text-slate-400 mt-1">
-                      🔒 {settings.language === 'he' ? 'נעול (יתגלה בהמשך)' : 'Locked (Reveals later)'}
-                    </span>
                   )}
                 </div>
 
@@ -553,7 +549,7 @@ export default function App() {
                       </span>
                     )}
                   </div>
-                  {mexicoUnlocked ? (
+                  {mexicoUnlocked && (
                     <>
                       <div className="h-1.5 rounded-full bg-slate-200/80 overflow-hidden my-1">
                         <div
@@ -573,10 +569,6 @@ export default function App() {
                           : `Spotted ${mexicoSpottedCount} of 1`}
                       </span>
                     </>
-                  ) : (
-                    <span className="text-[10px] font-bold text-slate-400 mt-1">
-                      🔒 {settings.language === 'he' ? 'נעול (יתגלה בהמשך)' : 'Locked (Reveals later)'}
-                    </span>
                   )}
                 </div>
               </div>

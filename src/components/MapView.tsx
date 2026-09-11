@@ -8,10 +8,6 @@ import {
   isCanadaUnlocked,
   isMexicoUnlocked,
 } from '../data/bonusData';
-import {
-  CANADA_PROVINCES_GEOJSON,
-  MEXICO_GEOJSON,
-} from '../data/bonusGeoJson';
 import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
 const REGION_COLORS: Record<string, string> = {
@@ -47,9 +43,10 @@ export const MapView: React.FC<MapViewProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
 
-  const [geoData, setGeoData] = useState<any>(null);
+  const [usGeoData, setUsGeoData] = useState<any>(null);
+  const [canadaGeoData, setCanadaGeoData] = useState<any>(null);
+  const [mexicoGeoData, setMexicoGeoData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [mapRegion, setMapRegion] = useState<'us' | 'canada' | 'mexico'>('us');
 
   const usFoundCount = Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length;
   const canadaUnlocked = isCanadaUnlocked(usFoundCount);
@@ -67,6 +64,8 @@ export const MapView: React.FC<MapViewProps> = ({
       map[st.name.toLowerCase()] = st;
       map[st.id.toLowerCase()] = st;
     });
+    map['yukon territory'] = CANADA_PROVINCES_DATA['YT'];
+
     Object.values(MEXICO_DATA).forEach((st) => {
       map[st.name.toLowerCase()] = st;
       map[st.id.toLowerCase()] = st;
@@ -74,48 +73,66 @@ export const MapView: React.FC<MapViewProps> = ({
     allStateDataMap.current = map;
   }, []);
 
-  // Fetch US GeoJSON once
+  // Fetch GeoJSON files (US, Canada, Mexico)
   useEffect(() => {
     let isMounted = true;
-    const loadGeoJson = async () => {
+    const loadAllGeoJson = async () => {
       try {
-        const cached = localStorage.getItem('platehunt.geojson.v1');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (isMounted) {
-            setGeoData(parsed);
-            setIsLoading(false);
-          }
-          return;
-        }
-      } catch {
-        // continue to fetch
-      }
-
-      try {
-        let res = await fetch('/us-states.json');
-        if (!res.ok) {
-          res = await fetch(
-            'https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json'
-          );
-        }
-        const data = await res.json();
+        // Load US GeoJSON
+        let usData: any = null;
         try {
-          localStorage.setItem('platehunt.geojson.v1', JSON.stringify(data));
+          const cached = localStorage.getItem('platehunt.geojson.us.v2');
+          if (cached) usData = JSON.parse(cached);
         } catch {
-          // localStorage might be full
+          // ignore cache error
         }
+
+        if (!usData) {
+          let res = await fetch('/us-states.json');
+          if (!res.ok) {
+            res = await fetch(
+              'https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json'
+            );
+          }
+          usData = await res.json();
+          try {
+            localStorage.setItem('platehunt.geojson.us.v2', JSON.stringify(usData));
+          } catch {
+            // storage limit
+          }
+        }
+
+        // Load Canada GeoJSON
+        let canadaData: any = null;
+        try {
+          const resCa = await fetch('/canada-provinces.json');
+          if (resCa.ok) canadaData = await resCa.json();
+        } catch (err) {
+          console.warn('Failed to load Canada GeoJSON', err);
+        }
+
+        // Load Mexico GeoJSON
+        let mexicoData: any = null;
+        try {
+          const resMx = await fetch('/mexico.json');
+          if (resMx.ok) mexicoData = await resMx.json();
+        } catch (err) {
+          console.warn('Failed to load Mexico GeoJSON', err);
+        }
+
         if (isMounted) {
-          setGeoData(data);
+          setUsGeoData(usData);
+          setCanadaGeoData(canadaData);
+          setMexicoGeoData(mexicoData);
           setIsLoading(false);
         }
       } catch (err) {
-        console.error('Failed to load US states GeoJSON', err);
+        console.error('Failed to load GeoJSON layers', err);
         if (isMounted) setIsLoading(false);
       }
     };
 
-    loadGeoJson();
+    loadAllGeoJson();
     return () => {
       isMounted = false;
     };
@@ -126,12 +143,12 @@ export const MapView: React.FC<MapViewProps> = ({
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
     const isSmall = window.innerWidth < 640;
-    const initialZoom = isStatic ? 3.6 : isSmall ? 3.4 : 4;
+    const initialZoom = isStatic ? 3.4 : isSmall ? 3.1 : 3.6;
 
     const map = L.map(mapContainerRef.current, {
-      center: [37.8, -96.9],
+      center: [41.5, -96.0],
       zoom: initialZoom,
-      minZoom: 2.5,
+      minZoom: 2.3,
       maxZoom: 8,
       zoomControl: false,
       attributionControl: false,
@@ -158,22 +175,7 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, [isStatic]);
 
-  // Update Map View Center on Region Change
-  useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!map) return;
-    const isSmall = window.innerWidth < 640;
-
-    if (mapRegion === 'us') {
-      map.flyTo([37.8, -96.9], isStatic ? 3.6 : isSmall ? 3.4 : 4, { duration: 0.8 });
-    } else if (mapRegion === 'canada') {
-      map.flyTo([56.0, -100.0], isSmall ? 3.0 : 3.6, { duration: 0.8 });
-    } else if (mapRegion === 'mexico') {
-      map.flyTo([23.6, -102.5], isSmall ? 4.2 : 4.8, { duration: 0.8 });
-    }
-  }, [mapRegion, isStatic]);
-
-  // Render Vector GeoJSON Polygons for Active Map Region
+  // Render Vector GeoJSON Polygons on Unified North America Map
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
@@ -183,19 +185,25 @@ export const MapView: React.FC<MapViewProps> = ({
       geoJsonLayerRef.current = null;
     }
 
+    if (!usGeoData) return;
+
     const foundSet = new Set(Object.keys(spottedRecords));
 
-    // Determine target GeoJSON data
-    let targetGeoJsonData: any = null;
-    if (mapRegion === 'us' && geoData) {
-      targetGeoJsonData = geoData;
-    } else if (mapRegion === 'canada') {
-      targetGeoJsonData = CANADA_PROVINCES_GEOJSON;
-    } else if (mapRegion === 'mexico') {
-      targetGeoJsonData = MEXICO_GEOJSON;
+    // Combine feature collections dynamically depending on unlocks
+    const combinedFeatures: any[] = [...(usGeoData.features || [])];
+
+    if (canadaUnlocked && canadaGeoData?.features) {
+      combinedFeatures.push(...canadaGeoData.features);
     }
 
-    if (!targetGeoJsonData) return;
+    if (mexicoUnlocked && mexicoGeoData?.features) {
+      combinedFeatures.push(...mexicoGeoData.features);
+    }
+
+    const combinedGeoJson: any = {
+      type: 'FeatureCollection',
+      features: combinedFeatures,
+    };
 
     const getFeatureStyle = (feature: any) => {
       const idOrName = (feature.properties?.id || feature.properties?.name || '').toLowerCase();
@@ -273,13 +281,13 @@ export const MapView: React.FC<MapViewProps> = ({
       });
     };
 
-    const layer = L.geoJSON(targetGeoJsonData, {
+    const layer = L.geoJSON(combinedGeoJson, {
       style: getFeatureStyle,
       onEachFeature: onEachFeature,
     }).addTo(map);
 
     geoJsonLayerRef.current = layer;
-  }, [geoData, spottedRecords, selectedStateId, onSelectState, mapRegion]);
+  }, [usGeoData, canadaGeoData, mexicoGeoData, canadaUnlocked, mexicoUnlocked, spottedRecords, selectedStateId, onSelectState]);
 
   // Zoom control handlers
   const handleZoomIn = () => {
@@ -294,93 +302,36 @@ export const MapView: React.FC<MapViewProps> = ({
     const map = mapInstanceRef.current;
     if (!map) return;
     const isSmall = window.innerWidth < 640;
-
-    if (mapRegion === 'us') {
-      map.setView([37.8, -96.9], isStatic ? 3.6 : isSmall ? 3.4 : 4);
-    } else if (mapRegion === 'canada') {
-      map.setView([56.0, -100.0], isSmall ? 3.0 : 3.6);
-    } else if (mapRegion === 'mexico') {
-      map.setView([23.6, -102.5], isSmall ? 4.2 : 4.8);
-    }
+    map.setView([41.5, -96.0], isStatic ? 3.4 : isSmall ? 3.1 : 3.6);
   };
 
   return (
     <div className="space-y-2">
-      {/* Map Country Selector Tabs (Only unlocked bonus tabs appear) */}
+      {/* US Region Color Pills Header */}
       {!isStatic && (
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
-            <button
-              type="button"
-              onClick={() => setMapRegion('us')}
-              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
-                mapRegion === 'us'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              <span>🇺🇸</span>
-              <span>{language === 'he' ? 'מפת ארה״ב' : 'US Map'}</span>
-            </button>
+        <div className="flex items-center justify-between gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+          {REGIONS_INFO.map((reg) => {
+            const countInReg = Object.values(STATES_DATA).filter(
+              (s) => s.region === reg.id && spottedRecords[s.id]
+            ).length;
+            const totalInReg = Object.values(STATES_DATA).filter((s) => s.region === reg.id).length;
 
-            {canadaUnlocked && (
-              <button
-                type="button"
-                onClick={() => setMapRegion('canada')}
-                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
-                  mapRegion === 'canada'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'bg-white text-amber-900 border border-amber-200 hover:bg-amber-50'
-                }`}
+            return (
+              <div
+                key={reg.id}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 border border-slate-200/80 shadow-2xs text-[11px] font-bold text-slate-700 shrink-0"
               >
-                <span>🇨🇦</span>
-                <span>{language === 'he' ? 'מפת קנדה (בונוס 1)' : 'Canada Map (Bonus 1)'}</span>
-              </button>
-            )}
-
-            {mexicoUnlocked && (
-              <button
-                type="button"
-                onClick={() => setMapRegion('mexico')}
-                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
-                  mapRegion === 'mexico'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'bg-white text-emerald-900 border border-emerald-200 hover:bg-emerald-50'
-                }`}
-              >
-                <span>🇲🇽</span>
-                <span>{language === 'he' ? 'מפת מקסיקו (בונוס 2)' : 'Mexico Map (Bonus 2)'}</span>
-              </button>
-            )}
-          </div>
-
-          {/* US Region Color Pills (Only shown when US map active) */}
-          {mapRegion === 'us' && (
-            <div className="flex items-center justify-between gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
-              {REGIONS_INFO.map((reg) => {
-                const countInReg = Object.values(STATES_DATA).filter(
-                  (s) => s.region === reg.id && spottedRecords[s.id]
-                ).length;
-                const totalInReg = Object.values(STATES_DATA).filter((s) => s.region === reg.id).length;
-
-                return (
-                  <div
-                    key={reg.id}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 border border-slate-200/80 shadow-2xs text-[11px] font-bold text-slate-700 shrink-0"
-                  >
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
-                      style={{ backgroundColor: reg.color }}
-                    />
-                    <span>{language === 'he' ? reg.nameHe : reg.nameEn}</span>
-                    <span className="text-[10px] text-slate-400 font-semibold">
-                      {countInReg}/{totalInReg}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
+                  style={{ backgroundColor: reg.color }}
+                />
+                <span>{language === 'he' ? reg.nameHe : reg.nameEn}</span>
+                <span className="text-[10px] text-slate-400 font-semibold">
+                  {countInReg}/{totalInReg}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -390,7 +341,7 @@ export const MapView: React.FC<MapViewProps> = ({
         <div
           ref={mapContainerRef}
           id="leaflet-map-element"
-          className={`w-full ${isStatic ? 'h-[360px]' : 'h-[380px] sm:h-[420px]'} bg-slate-50`}
+          className={`w-full ${isStatic ? 'h-[360px]' : 'h-[380px] sm:h-[440px]'} bg-slate-50`}
         />
 
         {/* Loading Overlay */}
