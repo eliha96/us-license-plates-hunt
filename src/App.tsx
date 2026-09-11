@@ -11,7 +11,7 @@ import {
 } from './utils/storage';
 import { sounds } from './utils/audio';
 
-import { Base44MapView } from './components/Base44MapView';
+import { MapView } from './components/MapView';
 import { DiscoveriesView } from './components/DiscoveriesView';
 import { SightingsPageView } from './components/SightingsPageView';
 import { AchievementsView } from './components/AchievementsView';
@@ -40,7 +40,7 @@ const REGION_COLORS: Record<string, string> = {
   Northeast: '#6366f1',
 };
 
-// Circular Progress Ring matching plate-hunt-usa.base44.app XR component
+// Circular Progress Ring component
 function CircularProgressRing({
   value,
   total = 50,
@@ -294,7 +294,7 @@ export default function App() {
       id="plate-hunt-app"
       className="min-h-screen bg-gradient-to-b from-indigo-50/60 via-slate-50 to-white text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white"
     >
-      {/* Centered Mobile App Container matching plate-hunt-usa.base44.app */}
+      {/* Centered Mobile App Container */}
       <div className="w-full max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col pb-24 border-x border-slate-100 relative">
         {/* App Header */}
         <header className="p-4 sm:p-5 pb-2 flex items-center justify-between border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30">
@@ -456,9 +456,9 @@ export default function App() {
                 </div>
               )}
 
-              {/* Interactive US Leaflet Map matching plate-hunt-usa.base44.app */}
+              {/* Interactive US Leaflet Map */}
               <div className="space-y-1">
-                <Base44MapView
+                <MapView
                   spottedRecords={spottedRecords}
                   onSelectState={handleSelectStateFromMap}
                   language={settings.language}
@@ -481,7 +481,7 @@ export default function App() {
                 </div>
               )}
 
-              {/* Big Prominent Action Button matching plate-hunt-usa.base44.app */}
+              {/* Big Prominent Action Button */}
               <button
                 type="button"
                 onClick={() => {
@@ -561,7 +561,7 @@ export default function App() {
 
         {/* Modern Frosted Glass Bottom Navigation Bar with Central Floating Action Button */}
         <nav
-          id="base44-bottom-nav"
+          id="app-bottom-nav"
           className="fixed bottom-0 inset-x-0 z-40 max-w-md mx-auto border-t border-slate-200/80 bg-white/90 backdrop-blur-xl px-2 py-1.5 flex items-center justify-around shadow-lg shadow-slate-900/5"
         >
           {/* 1: Hunt */}

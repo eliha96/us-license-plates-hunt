@@ -24,6 +24,7 @@ export interface StateInfo {
   };
   samplePlateNumber?: string;
   triviaHe: string;
+  triviaEn?: string;
 }
 
 export interface SpottedRecord {

@@ -18,7 +18,7 @@ const REGIONS_INFO = [
   { id: 'Northeast', nameHe: 'צפון-מזרח', nameEn: 'Northeast', color: '#6366f1' },
 ];
 
-interface Base44MapViewProps {
+interface MapViewProps {
   spottedRecords: Record<string, SpottedRecord>;
   onSelectState?: (state: StateInfo) => void;
   selectedStateId?: string | null;
@@ -26,7 +26,7 @@ interface Base44MapViewProps {
   isStatic?: boolean;
 }
 
-export const Base44MapView: React.FC<Base44MapViewProps> = ({
+export const MapView: React.FC<MapViewProps> = ({
   spottedRecords,
   onSelectState,
   selectedStateId,
@@ -282,7 +282,7 @@ export const Base44MapView: React.FC<Base44MapViewProps> = ({
         {/* Map Element */}
         <div
           ref={mapContainerRef}
-          id="base44-leaflet-map-element"
+          id="leaflet-map-element"
           className={`w-full ${isStatic ? 'h-[360px]' : 'h-[380px] sm:h-[420px]'} bg-slate-50`}
         />
 

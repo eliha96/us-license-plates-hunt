@@ -5,6 +5,7 @@ export interface RegionDefinition {
   nameEn: string;
   nameHe: string;
   descriptionHe: string;
+  descriptionEn: string;
   color: string; // Base vibrant hex
   lightColor: string; // Light tint for unspotted fill
   spottedColor: string; // Saturated fill for spotted
@@ -22,6 +23,7 @@ export const US_REGIONS: Record<Region, RegionDefinition> = {
     nameEn: 'West',
     nameHe: 'מערב',
     descriptionHe: 'החוף הפסיפי, הרי הרוקי ומדבריות הדרום-מערב (כולל אלסקה והוואי)',
+    descriptionEn: 'Pacific Coast, Rocky Mountains & Southwest Deserts (including Alaska & Hawaii)',
     color: '#F59E0B', // Amber
     lightColor: '#FEF3C7',
     spottedColor: '#F59E0B',
@@ -37,6 +39,7 @@ export const US_REGIONS: Record<Region, RegionDefinition> = {
     nameEn: 'Midwest',
     nameHe: 'המערב התיכון',
     descriptionHe: 'לב אמריקה, המישורים הגדולים ואזור האגמים הגדולים',
+    descriptionEn: 'America’s Heartland, Great Plains & Great Lakes region',
     color: '#10B981', // Emerald
     lightColor: '#D1FAE5',
     spottedColor: '#10B981',
@@ -52,6 +55,7 @@ export const US_REGIONS: Record<Region, RegionDefinition> = {
     nameEn: 'South',
     nameHe: 'דרום',
     descriptionHe: 'מדינות הדרום, חוף המפרץ, חצי האי פלורידה וטקסס',
+    descriptionEn: 'Southern states, Gulf Coast, Florida peninsula & Texas',
     color: '#F43F5E', // Rose / Coral
     lightColor: '#FFE4E6',
     spottedColor: '#F43F5E',
@@ -67,6 +71,7 @@ export const US_REGIONS: Record<Region, RegionDefinition> = {
     nameEn: 'Northeast',
     nameHe: 'צפון-מזרח',
     descriptionHe: 'ניו אינגלנד, מדינות החוף האטלנטי הצפוני והמרכזים ההיסטוריים',
+    descriptionEn: 'New England, Mid-Atlantic coastline & historic hubs',
     color: '#6366F1', // Indigo / Royal Blue
     lightColor: '#E0E7FF',
     spottedColor: '#6366F1',

@@ -19,7 +19,7 @@ interface AchievementsViewProps {
   language?: 'he' | 'en';
 }
 
-interface Base44Badge {
+interface AchievementBadge {
   id: string;
   title: string;
   titleHe: string;
@@ -30,7 +30,7 @@ interface Base44Badge {
   progress: (spotted: Record<string, SpottedRecord>) => { current: number; total: number };
 }
 
-const BASE44_BADGES: Base44Badge[] = [
+const ACHIEVEMENT_BADGES: AchievementBadge[] = [
   {
     id: 'first',
     title: 'First Plate',
@@ -149,7 +149,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
   const remainingCount = 50 - foundCount;
 
   // Unlocked badges
-  const unlockedBadges = BASE44_BADGES.filter((b) => b.isUnlocked(spottedRecords));
+  const unlockedBadges = ACHIEVEMENT_BADGES.filter((b) => b.isUnlocked(spottedRecords));
 
   // First found & Latest found
   const sortedRecords = [...records].sort(
@@ -192,7 +192,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
         </p>
       </header>
 
-      {/* 2x2 Stats Grid matching plate-hunt-usa.base44.app */}
+      {/* 2x2 Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-3.5 shadow-2xs">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-wide">
@@ -229,7 +229,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
           <div className="text-xl font-black text-slate-800 mt-0.5">
             {unlockedBadges.length}
             <span className="text-sm font-semibold text-slate-400">
-              /{BASE44_BADGES.length}
+              /{ACHIEVEMENT_BADGES.length}
             </span>
           </div>
           <div className="text-[10px] text-slate-400">
@@ -324,7 +324,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
         </div>
 
         <div className="space-y-2">
-          {BASE44_BADGES.map((badge) => {
+          {ACHIEVEMENT_BADGES.map((badge) => {
             const unlocked = badge.isUnlocked(spottedRecords);
             const { current, total } = badge.progress(spottedRecords);
             const pct = Math.round((current / total) * 100);

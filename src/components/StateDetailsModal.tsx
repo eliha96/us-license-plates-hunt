@@ -73,7 +73,7 @@ export const StateDetailsModal: React.FC<StateDetailsModalProps> = ({
         dir={language === 'he' ? 'rtl' : 'ltr'}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header - Gradient matching plate-hunt-usa.base44.app K0 */}
+        {/* Header - Gradient */}
         <div
           className={`p-5 relative ${
             isSpotted
@@ -267,13 +267,13 @@ export const StateDetailsModal: React.FC<StateDetailsModalProps> = ({
                 {language === 'he' ? currentRegion?.nameHe : currentRegion?.nameEn}
               </span>
             </div>
-            {state.triviaHe && (
+            {(state.triviaHe || state.triviaEn) && (
               <div className="pt-2 border-t border-slate-200/60">
                 <span className="text-slate-400 font-semibold block mb-0.5">
                   💡 {language === 'he' ? 'הידעת?' : 'Did you know?'}
                 </span>
                 <p className="text-slate-600 leading-relaxed">
-                  {state.triviaHe}
+                  {language === 'he' ? state.triviaHe : (state.triviaEn || state.triviaHe)}
                 </p>
               </div>
             )}

@@ -157,7 +157,7 @@ export const DiscoveriesView: React.FC<DiscoveriesViewProps> = ({
             </button>
           </div>
 
-          {/* 4-column Grid matching plate-hunt-usa.base44.app */}
+          {/* 4-column Grid */}
           <div className="grid grid-cols-4 gap-2.5 pt-1">
             {filteredStates.map((st) => {
               const isFound = foundSet.has(st.id);

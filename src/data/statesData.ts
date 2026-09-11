@@ -16,7 +16,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     isCoastAtlantic: false,
     plateDesign: { bg: '#F8FAFC', text: '#0F172A', border: '#CBD5E1', accent: '#EF4444', badgeColor: '#B91C1C' },
     samplePlateNumber: '2B14A99',
-    triviaHe: 'ידועה כמרכז תוכנית החלל של נאס״א בהאנטסוויל ומרש עתיר היסטוריה של זכויות האזרח.',
+    triviaHe: 'ידועה כמרכז תוכנית החלל של נאס״א בהאנטסוויל ומורשת היסטורית עשירה של התנועה לזכויות האזרח.',
+    triviaEn: 'Home to NASA’s Space Flight Center in Huntsville and a rich history of the Civil Rights movement.',
   },
   AK: {
     id: 'AK',
@@ -33,6 +34,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FEF08A', text: '#1E3A8A', border: '#FACC15', accent: '#1D4ED8', badgeColor: '#1E40AF' },
     samplePlateNumber: 'GFE 823',
     triviaHe: 'המדינה הגדולה ביותר בארה״ב בשטחה - גדולה יותר מטקסס, קליפורניה ומונטנה ביחד!',
+    triviaEn: 'The largest state in the US by area — bigger than Texas, California, and Montana combined!',
   },
   AZ: {
     id: 'AZ',
@@ -49,7 +51,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     isSouthwest: true,
     plateDesign: { bg: '#FEF3C7', text: '#78350F', border: '#F59E0B', accent: '#D97706', badgeColor: '#B45309' },
     samplePlateNumber: 'CKZ 9104',
-    triviaHe: 'ביתם של הגרנד קניון, כביש 66 המפורסם, וסבוסי הסגוארו הענקיים במדבר סונורה.',
+    triviaHe: 'ביתם של הגרנד קניון, כביש 66 המפורסם, וקקטוס הסגוארו הענק במדבר סונורה.',
+    triviaEn: 'Home of the Grand Canyon, iconic Route 66, and giant Saguaro cacti in the Sonoran Desert.',
   },
   AR: {
     id: 'AR',
@@ -66,6 +69,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F1F5F9', text: '#0F172A', border: '#94A3B8', accent: '#DC2626', badgeColor: '#991B1B' },
     samplePlateNumber: '194 YUI',
     triviaHe: 'המדינה היחידה בארה״ב שבה פועל מכרה יהלומים פתוח לקהל הרחב (Crater of Diamonds).',
+    triviaEn: 'The only US state with an active diamond mine open to the public (Crater of Diamonds).',
   },
   CA: {
     id: 'CA',
@@ -82,7 +86,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     isCoastPacific: true,
     plateDesign: { bg: '#FFFFFF', text: '#1E3A8A', border: '#E2E8F0', accent: '#DC2626', badgeColor: '#DC2626' },
     samplePlateNumber: '8SAM123',
-    triviaHe: 'המדינה המאוכלסת ביותר בארה״ב, ביתם של הוליווד, עמק הסיליקון והפארקים יוסמיטי ורדווד.',
+    triviaHe: 'המדינה المאוכלסת ביותר בארה״ב, ביתם של הוליווד, עמק הסיליקון והפארקים יוסמיטי ורדווד.',
+    triviaEn: 'The most populous state in the US, home to Hollywood, Silicon Valley, Yosemite, and Redwood forests.',
   },
   CO: {
     id: 'CO',
@@ -98,7 +103,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     regionHe: 'מערב',
     plateDesign: { bg: '#E2E8F0', text: '#064E3B', border: '#10B981', accent: '#047857', badgeColor: '#065F46' },
     samplePlateNumber: 'ABC-D12',
-    triviaHe: 'המדינה הגבוהה ביותר בממוצע בארה״ב, עם מעל 50 פסגות בגובה מעל 14,000 רגל (Fourteeners).',
+    triviaHe: 'המדינה הגבוהה ביותר בממוצע בארה״ב, עם מעל 50 פסגות בגובה מעל 14,000 רגל (המוכרות כ-Fourteeners).',
+    triviaEn: 'The highest average elevation state in the US, featuring over 50 mountain peaks above 14,000 feet (Fourteeners).',
   },
   CT: {
     id: 'CT',
@@ -116,6 +122,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#E0F2FE', text: '#0369A1', border: '#38BDF8', accent: '#0284C7', badgeColor: '#075985' },
     samplePlateNumber: '1AB-CD2',
     triviaHe: 'כאן הומצאו ההמבורגר הראשון (במסעדת Louis Lunch) והצוללת הגרעינית הראשונה.',
+    triviaEn: 'Birthplace of the first hamburger (Louis Lunch) and the first nuclear submarine.',
   },
   DE: {
     id: 'DE',
@@ -133,6 +140,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#1E293B', text: '#FDE047', border: '#EAB308', accent: '#FACC15', badgeColor: '#CA8A04' },
     samplePlateNumber: '123456',
     triviaHe: 'המדינה הראשונה שאשררה את חוקת ארצות הברית ב-7 בדצמבר 1787.',
+    triviaEn: 'The First State to ratify the US Constitution on December 7, 1787.',
   },
   DC: {
     id: 'DC',
@@ -150,6 +158,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#1E40AF', border: '#E2E8F0', accent: '#DC2626', badgeColor: '#DC2626' },
     samplePlateNumber: 'EB-1234',
     triviaHe: 'המחוז הפדרלי של ארה״ב, מקום מושבם של הבית הלבן, הקפיטול ומוזיאוני הסמית׳סוניאן.',
+    triviaEn: 'The federal district of the United States, home to the White House, Capitol, and Smithsonian Museums.',
   },
   FL: {
     id: 'FL',
@@ -166,7 +175,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     isCoastAtlantic: true,
     plateDesign: { bg: '#FFFBEB', text: '#166534', border: '#F59E0B', accent: '#EA580C', badgeColor: '#D97706' },
     samplePlateNumber: 'Y12 3AB',
-    triviaHe: 'לוחיות הרישוי מציגות תפוזים עסיסיים. פלורידה כוללת את דיסניוורלד, האברגליידס ומרכז החלל קנדי.',
+    triviaHe: 'לוחיות הרישוי מעוטרות בתפוזים עסיסיים. פלורידה כוללת את דיסניוורלד, האברגליידס ומרכז החלל קנדי.',
+    triviaEn: 'Plates feature juicy oranges! Home to Disney World, the Everglades, and Kennedy Space Center.',
   },
   GA: {
     id: 'GA',
@@ -183,7 +193,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     isCoastAtlantic: true,
     plateDesign: { bg: '#FFF7ED', text: '#0F172A', border: '#FDBA74', accent: '#F97316', badgeColor: '#EA580C' },
     samplePlateNumber: 'CYN 4321',
-    triviaHe: 'מולדת קוקה-קולה, אטלנטה היא מוקד תעופה בינלאומי ומפיקת האפרסקים והאגוזים המובילה.',
+    triviaHe: 'מולדת קוקה-קולה, אטלנטה היא מוקד תעופה בינלאומי וג׳ורג׳יה מכונה ״מדינת האפרסק״.',
+    triviaEn: 'Birthplace of Coca-Cola, Atlanta is a major global hub, and GA is famed as the Peach State.',
   },
   HI: {
     id: 'HI',
@@ -200,6 +211,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#1E293B', border: '#E2E8F0', accent: '#E11D48', badgeColor: '#3B82F6' },
     samplePlateNumber: 'FGH 789',
     triviaHe: 'מדינת האיים היחידה בארה״ב! הלוחית מפורסמת בקשת הצבעונית המרהיבה המעטרת אותה.',
+    triviaEn: 'The only island state in the US! Famous for the vibrant rainbow design decorating its license plates.',
   },
   ID: {
     id: 'ID',
@@ -216,6 +228,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FEF2F2', text: '#1E293B', border: '#EF4444', accent: '#991B1B', badgeColor: '#7F1D1D' },
     samplePlateNumber: '1A BC123',
     triviaHe: 'על הלוחית כתוב בגאווה "Famous Potatoes". איידהו מייצרת כשליש מתפוחי האדמה בארה״ב.',
+    triviaEn: 'Proudly displays "Famous Potatoes" on its plate. Idaho produces nearly one-third of all US potatoes.',
   },
   IL: {
     id: 'IL',
@@ -231,7 +244,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     regionHe: 'המערב התיכון',
     plateDesign: { bg: '#F8FAFC', text: '#1E3A8A', border: '#CBD5E1', accent: '#2563EB', badgeColor: '#1D4ED8' },
     samplePlateNumber: 'AB 12345',
-    triviaHe: 'התחלת כביש 66 המיתולוגי בשיקגו! הלוחית נושאת את דיוקנו של אברהם לינקולן.',
+    triviaHe: 'נקודת ההתחלה של כביש 66 המיתולוגי בשיקגו! הלוחית נושאת את דיוקנו של אברהם לינקולן.',
+    triviaEn: 'Starting point of legendary Route 66 in Chicago! License plates bear Abraham Lincoln’s portrait.',
   },
   IN: {
     id: 'IN',
@@ -247,7 +261,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     regionHe: 'המערב התיכון',
     plateDesign: { bg: '#EFF6FF', text: '#1E3A8A', border: '#93C5FD', accent: '#F59E0B', badgeColor: '#D97706' },
     samplePlateNumber: '999ABC',
-    triviaHe: 'המדינה המובילה בכבישים בין-מדינתיים מצטלבים ומארחת את מירוץ Indy 500 האגדי.',
+    triviaHe: 'מכונה ״צומת הדרכים של אמריקה״ (Crossroads of America) ומארחת את מרוץ אינדי 500 האגדי.',
+    triviaEn: 'Known as the "Crossroads of America" with more intersecting interstates than any state, and host of the Indy 500.',
   },
   IA: {
     id: 'IA',
@@ -264,6 +279,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F0FDFA', text: '#115E59', border: '#5EEAD4', accent: '#0D9488', badgeColor: '#0F766E' },
     samplePlateNumber: 'ABC 123',
     triviaHe: 'שוכנת בין שני נהרות ענק: המיסיסיפי והמיזורי, וידועה בשדות התירס האינסופיים שלה.',
+    triviaEn: 'Bordered by two massive rivers (Mississippi and Missouri) and famous for vast cornfields.',
   },
   KS: {
     id: 'KS',
@@ -280,6 +296,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFBEB', text: '#78350F', border: '#FDE047', accent: '#EAB308', badgeColor: '#CA8A04' },
     samplePlateNumber: '123 ABC',
     triviaHe: 'המרכז הגיאוגרפי של 48 המדינות הרציפות של ארה״ב, ומולדתה של דורותי מ״הקוסם מארץ עוץ״.',
+    triviaEn: 'Geographic center of the contiguous 48 states, and fictional home of Dorothy from The Wizard of Oz.',
   },
   KY: {
     id: 'KY',
@@ -295,7 +312,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     regionHe: 'דרום',
     plateDesign: { bg: '#F0FDF4', text: '#14532D', border: '#86EFAC', accent: '#16A34A', badgeColor: '#15803D' },
     samplePlateNumber: '123-ABC',
-    triviaHe: 'ידועה במרוץ הסוסים קנטקי דרבי, מוזיקת בלוגראס, מערת הענק מאמות׳ ובורבון משובח.',
+    triviaHe: 'ידועה במרוץ הסוסים קנטקי דרבי, מוזיקת בלו-גראס, מערת מאמות׳ הענקית ובורבון משובח.',
+    triviaEn: 'Famed for the Kentucky Derby horse race, bluegrass music, Mammoth Cave, and fine bourbon.',
   },
   LA: {
     id: 'LA',
@@ -312,6 +330,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FEF2F2', text: '#1E293B', border: '#FECACA', accent: '#DC2626', badgeColor: '#991B1B' },
     samplePlateNumber: '123 ABC',
     triviaHe: 'מולדת מוזיקת הג׳אז, פסטיבל המרדי גרא בניו אורלינס ומטבח קריאולי/קייג׳ון חריף וטעים.',
+    triviaEn: 'Birthplace of jazz music, New Orleans Mardi Gras festival, and flavorful Creole/Cajun cuisine.',
   },
   ME: {
     id: 'ME',
@@ -329,6 +348,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F8FAFC', text: '#1E3A8A', border: '#94A3B8', accent: '#16A34A', badgeColor: '#15803D' },
     samplePlateNumber: '1234 AB',
     triviaHe: 'מדינה עם מגדלורים ציוריים, יערות עבותים, לובסטרים מפורסמים והפארק הלאומי אקדיה.',
+    triviaEn: 'Famous for picturesque lighthouses, dense pine forests, delicious lobsters, and Acadia National Park.',
   },
   MD: {
     id: 'MD',
@@ -346,6 +366,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#0F172A', border: '#E2E8F0', accent: '#DC2626', badgeColor: '#EAB308' },
     samplePlateNumber: '1AB2345',
     triviaHe: 'דגל המדינה שלה הוא אחד הייחודיים והצבעוניים בארה״ב, ומפרץ צ׳ספיק מפורסם בסרטנים כחולים.',
+    triviaEn: 'Features one of the most unique state flags, and the Chesapeake Bay is famous for blue crabs.',
   },
   MA: {
     id: 'MA',
@@ -363,6 +384,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#1E40AF', border: '#CBD5E1', accent: '#DC2626', badgeColor: '#DC2626' },
     samplePlateNumber: '123 AB4',
     triviaHe: 'מוקד היסטורי מהפכני (מסיבת התה של בוסטון), ביתם של אוניברסיטת הרווארד ו-MIT.',
+    triviaEn: 'Historic revolutionary hub (Boston Tea Party), home to Harvard University and MIT.',
   },
   MI: {
     id: 'MI',
@@ -379,6 +401,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#0F172A', text: '#38BDF8', border: '#0284C7', accent: '#38BDF8', badgeColor: '#0284C7' },
     samplePlateNumber: 'ABC 1234',
     triviaHe: 'מוקפת בארבעה מחמשת האגמים הגדולים, ומרכז תעשיית הרכב האמריקאית (דטרויט / Motor City).',
+    triviaEn: 'Bordered by 4 of the 5 Great Lakes, and the heart of America’s auto industry (Detroit / Motor City).',
   },
   MN: {
     id: 'MN',
@@ -395,6 +418,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F0F9FF', text: '#0369A1', border: '#7DD3FC', accent: '#0284C7', badgeColor: '#0369A1' },
     samplePlateNumber: 'ABC 123',
     triviaHe: 'למעשה יש בה קרוב ל-12,000 אגמים! כאן מתחיל נהר המיסיסיפי העצום מאגם איטסקה.',
+    triviaEn: 'Actually contains nearly 12,000 lakes! The mighty Mississippi River begins here at Lake Itasca.',
   },
   MS: {
     id: 'MS',
@@ -410,7 +434,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     regionHe: 'דרום',
     plateDesign: { bg: '#FEF3C7', text: '#1E293B', border: '#FCD34D', accent: '#B45309', badgeColor: '#92400E' },
     samplePlateNumber: 'ABC 1234',
-    triviaHe: 'ערש מוזיקת הבלוז של דלתת המיסיסיפי, שעיצבה את כל הרוקנרול המודרני.',
+    triviaHe: 'ערש מוזיקת הבלוז של דלתת המיסיסיפי, שהשפיעה עמוקות על התפתחות מוזיקת הרוקנרול.',
+    triviaEn: 'Birthplace of Mississippi Delta blues music, which heavily influenced modern rock and roll.',
   },
   MO: {
     id: 'MO',
@@ -427,6 +452,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#EFF6FF', text: '#1E3A8A', border: '#93C5FD', accent: '#DC2626', badgeColor: '#DC2626' },
     samplePlateNumber: 'AB1 C2D',
     triviaHe: 'קשת השער בסנט לואיס (Gateway Arch) מסמלת את נקודת היציאה ההיסטורית מערבה.',
+    triviaEn: 'The Gateway Arch in St. Louis symbolizes the historic gateway to the American West.',
   },
   MT: {
     id: 'MT',
@@ -443,6 +469,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#0F172A', text: '#FFFFFF', border: '#334155', accent: '#38BDF8', badgeColor: '#2563EB' },
     samplePlateNumber: '1-12345A',
     triviaHe: 'נופים פתוחים עוצרי נשימה, הפארק הלאומי גליישר ועושר עצום של חיות בר ודובי גריזלי.',
+    triviaEn: 'Breathtaking open landscapes, Glacier National Park, and abundant grizzly bears and wildlife.',
   },
   NE: {
     id: 'NE',
@@ -459,6 +486,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFBEB', text: '#854D0E', border: '#FDE047', accent: '#CA8A04', badgeColor: '#A16207' },
     samplePlateNumber: '1-A1234',
     triviaHe: 'חלק מרכזי משביל אורגון ההיסטורי עליו נסעו חלוצי אמריקה בעגלות סוסים.',
+    triviaEn: 'A central corridor of the historic Oregon Trail traveled by American pioneers in covered wagons.',
   },
   NV: {
     id: 'NV',
@@ -476,6 +504,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#1E293B', text: '#F8FAFC', border: '#475569', accent: '#38BDF8', badgeColor: '#0EA5E9' },
     samplePlateNumber: '123-A45',
     triviaHe: 'ביתם של לאס וגאס הנוצצת, סכר הובר, אגם טאהו ושמי הלילה הנקיים ביותר לצפייה בכוכבים.',
+    triviaEn: 'Home of glamorous Las Vegas, Hoover Dam, Lake Tahoe, and crystal clear night skies for stargazing.',
   },
   NH: {
     id: 'NH',
@@ -493,6 +522,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F8FAFC', text: '#15803D', border: '#86EFAC', accent: '#16A34A', badgeColor: '#166534' },
     samplePlateNumber: '123 4567',
     triviaHe: 'המוטו המפורסם ביותר על לוחית רישוי: "Live Free or Die". מדינה ללא מס קנייה כללי.',
+    triviaEn: 'Features the famous license plate motto: "Live Free or Die". Has no general state sales tax.',
   },
   NJ: {
     id: 'NJ',
@@ -510,6 +540,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FEF9C3', text: '#0F172A', border: '#FACC15', accent: '#CA8A04', badgeColor: '#854D0E' },
     samplePlateNumber: 'A12-BCD',
     triviaHe: 'המדינה עם צפיפות האוכלוסין הגבוהה ביותר בארה״ב, חופים פופולריים (Jersey Shore) וטיילת אטלנטיק סיטי.',
+    triviaEn: 'The most densely populated US state, famous for the Jersey Shore and Atlantic City Boardwalk.',
   },
   NM: {
     id: 'NM',
@@ -527,6 +558,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FEF08A', text: '#DC2626', border: '#EAB308', accent: '#DC2626', badgeColor: '#B91C1C' },
     samplePlateNumber: 'ABC 123',
     triviaHe: 'הלוחית המרהיבה בצהוב ואדום מציגה את סמל השמש של בני הזיה (Zia Sun).',
+    triviaEn: 'The striking yellow and red license plate depicts the Zia Sun symbol of the Zia Pueblo tribe.',
   },
   NY: {
     id: 'NY',
@@ -544,6 +576,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FEF08A', text: '#1E3A8A', border: '#FACC15', accent: '#1D4ED8', badgeColor: '#1E40AF' },
     samplePlateNumber: 'ABC-1234',
     triviaHe: 'מפלי הניאגרה, יערות האדירונדק והעיר ניו יורק - הכרך התוסס ביותר בעולם.',
+    triviaEn: 'Niagara Falls, the Adirondack mountains, and New York City — the most vibrant metropolis in the world.',
   },
   NC: {
     id: 'NC',
@@ -561,6 +594,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#1E40AF', border: '#E2E8F0', accent: '#DC2626', badgeColor: '#DC2626' },
     samplePlateNumber: 'ABC-1234',
     triviaHe: 'האחים רייט ביצעו כאן את הטיסה הממונעת הראשונה בהיסטוריה בקיטי הוק בשנת 1903.',
+    triviaEn: 'The Wright Brothers accomplished the first controlled motor-powered flight here at Kitty Hawk in 1903.',
   },
   ND: {
     id: 'ND',
@@ -577,6 +611,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#EFF6FF', text: '#1E3A8A', border: '#BFDBFE', accent: '#F59E0B', badgeColor: '#D97706' },
     samplePlateNumber: '123 ABC',
     triviaHe: 'נופי הבדלנדס הקסומים של הפארק הלאומי תיאודור רוזוולט, ועדרי ביזונים משוטטים בחופשיות.',
+    triviaEn: 'Enchanting Badlands of Theodore Roosevelt National Park, where wild bison roam freely.',
   },
   OH: {
     id: 'OH',
@@ -593,6 +628,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#DC2626', border: '#E2E8F0', accent: '#2563EB', badgeColor: '#1E40AF' },
     samplePlateNumber: 'ABC 1234',
     triviaHe: 'מולדתם של 24 אסטרונאוטים (כולל ניל ארמסטרונג וג׳ון גלן) והיכל התהילה של הרוקנרול בקליבלנד.',
+    triviaEn: 'Birthplace of 24 astronauts (including Neil Armstrong & John Glenn) and the Rock & Roll Hall of Fame.',
   },
   OK: {
     id: 'OK',
@@ -610,6 +646,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#EFF6FF', text: '#1E40AF', border: '#93C5FD', accent: '#2563EB', badgeColor: '#1D4ED8' },
     samplePlateNumber: 'ABC-123',
     triviaHe: 'מכילה את הקטע הארוך ביותר שניתן לנסוע בו בכביש 66 המקורי, ועשירה במורשת אינדיאנית.',
+    triviaEn: 'Contains the longest drivable stretch of original Route 66, and rich Native American heritage.',
   },
   OR: {
     id: 'OR',
@@ -627,6 +664,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F0FDF4', text: '#166534', border: '#86EFAC', accent: '#15803D', badgeColor: '#166534' },
     samplePlateNumber: '123 ABC',
     triviaHe: 'עץ הדאגלס הירוק מעטר את הלוחית. ידועה באגם קרייטר העמוק ביותר בארה״ב ובחופים פראיים.',
+    triviaEn: 'Features the green Douglas Fir tree on its plate, Crater Lake (deepest in the US), and wild coastlines.',
   },
   PA: {
     id: 'PA',
@@ -643,6 +681,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#EFF6FF', text: '#1E3A8A', border: '#93C5FD', accent: '#EAB308', badgeColor: '#CA8A04' },
     samplePlateNumber: 'ABC-1234',
     triviaHe: 'פעמון החירות והכרזת העצמאות בפילדלפיה, שוקולד הרשי וקהילות האמיש בלנקסטר.',
+    triviaEn: 'Liberty Bell and Declaration of Independence in Philadelphia, Hershey’s chocolate, and Amish country.',
   },
   RI: {
     id: 'RI',
@@ -660,6 +699,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F0F9FF', text: '#0369A1', border: '#BAE6FD', accent: '#0284C7', badgeColor: '#075985' },
     samplePlateNumber: '123-456',
     triviaHe: 'המדינה הקטנה ביותר בארה״ב בשטחה (אך עם יותר מ-640 ק״מ של קו חוף יפהפה ומפרצים).',
+    triviaEn: 'The smallest US state by land area, but boasts over 400 miles of coastline and ocean bays.',
   },
   SC: {
     id: 'SC',
@@ -677,6 +717,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F8FAFC', text: '#0F172A', border: '#CBD5E1', accent: '#0284C7', badgeColor: '#0369A1' },
     samplePlateNumber: 'ABC 123',
     triviaHe: 'עץ הדקל והירח הסהר של דרום קרוליינה הם סמל דרומי אייקוני, יחד עם צ׳רלסטון ההיסטורית.',
+    triviaEn: 'The palmetto tree and crescent moon are iconic Southern symbols, along with historic Charleston.',
   },
   SD: {
     id: 'SD',
@@ -693,6 +734,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#EFF6FF', text: '#1E3A8A', border: '#93C5FD', accent: '#2563EB', badgeColor: '#1D4ED8' },
     samplePlateNumber: '1A2 345',
     triviaHe: 'ארבעת נשיאי ארה״ב החצובים בהר ראשמור (וושינגטון, ג׳פרסון, רוזוולט ולינקולן).',
+    triviaEn: 'Home to the four US presidents carved into Mount Rushmore (Washington, Jefferson, Roosevelt, Lincoln).',
   },
   TN: {
     id: 'TN',
@@ -709,6 +751,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#1E293B', text: '#F8FAFC', border: '#475569', accent: '#38BDF8', badgeColor: '#0EA5E9' },
     samplePlateNumber: '123-ABCD',
     triviaHe: 'בירת מוזיקת הקאנטרי בנאשוויל, ואחוזת גרייסלנד של אלביס פרסלי בממפיס.',
+    triviaEn: 'Capital of country music in Nashville, and Elvis Presley’s Graceland estate in Memphis.',
   },
   TX: {
     id: 'TX',
@@ -725,7 +768,8 @@ export const STATES_DATA: Record<string, StateInfo> = {
     isSouthwest: true,
     plateDesign: { bg: '#FFFFFF', text: '#0F172A', border: '#E2E8F0', accent: '#DC2626', badgeColor: '#1E40AF' },
     samplePlateNumber: 'ABC-1234',
-    triviaHe: 'המדינה הגדולה מבין 48 המדינות היבשתיות ("הכל גדול יותר בטקסס!"), בוקרים, רודיאו וברביקיו.',
+    triviaHe: 'המדינה הגדולה מבין 48 המדינות היבשתיות (״הכל גדול יותר בטקסס!״), בוקרים, רודיאו וברביקיו.',
+    triviaEn: 'The largest state in the continental US ("Everything is bigger in Texas!"), cowboys, and BBQ.',
   },
   UT: {
     id: 'UT',
@@ -743,6 +787,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFF7ED', text: '#9A3412', border: '#FB923C', accent: '#EA580C', badgeColor: '#C2410C' },
     samplePlateNumber: 'A12 3BC',
     triviaHe: 'קשת Delicate Arch המרהיבה על הלוחית, חמשת הפארקים הלאומיים (Mighty 5) ואגם המלח הגדול.',
+    triviaEn: 'Features Delicate Arch on its plate, the "Mighty 5" National Parks, and the Great Salt Lake.',
   },
   VT: {
     id: 'VT',
@@ -759,6 +804,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#14532D', text: '#FFFFFF', border: '#15803D', accent: '#4ADE80', badgeColor: '#22C55E' },
     samplePlateNumber: 'ABC 123',
     triviaHe: 'לוחית ירוקה עמוקה ומפורסמת, מולדת גלידת בן אנד ג׳ריס וסירופ המייפל המשובח בעולם.',
+    triviaEn: 'Famous deep green license plate, birthplace of Ben & Jerry’s ice cream, and world-class maple syrup.',
   },
   VA: {
     id: 'VA',
@@ -776,6 +822,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#1E3A8A', border: '#E2E8F0', accent: '#2563EB', badgeColor: '#1D4ED8' },
     samplePlateNumber: 'ABC-1234',
     triviaHe: 'מולדתם של 8 נשיאים אמריקאים (כולל ג׳ורג׳ וושינגטון) והפארק הלאומי שננדואה המהפנט.',
+    triviaEn: 'Birthplace of 8 US presidents (including George Washington) and Shenandoah National Park.',
   },
   WA: {
     id: 'WA',
@@ -793,6 +840,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#F8FAFC', text: '#1E3A8A', border: '#CBD5E1', accent: '#DC2626', badgeColor: '#DC2626' },
     samplePlateNumber: 'ABC1234',
     triviaHe: 'הר ריינייר המושלג מעטר את הלוחית, מולדת סטארבקס וסיאטל שבין מפרץ פיוג׳ט להרים.',
+    triviaEn: 'Snow-capped Mount Rainier adorns its plate, birthplace of Starbucks, and Seattle on Puget Sound.',
   },
   WV: {
     id: 'WV',
@@ -809,6 +857,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#1E40AF', border: '#E2E8F0', accent: '#EAB308', badgeColor: '#CA8A04' },
     samplePlateNumber: '12A 345',
     triviaHe: 'השיר המפורסם "Take Me Home, Country Roads" נכתב בהשראת הרי האפלצ׳ים של מערב וירג׳יניה.',
+    triviaEn: 'The famous song "Take Me Home, Country Roads" was inspired by West Virginia’s Appalachian Mountains.',
   },
   WI: {
     id: 'WI',
@@ -825,6 +874,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFFFFF', text: '#DC2626', border: '#E2E8F0', accent: '#DC2626', badgeColor: '#B91C1C' },
     samplePlateNumber: 'ABC-1234',
     triviaHe: 'יצרנית הגבינה המפורסמת ביותר בארה״ב, אוהדי קבוצת הפוטבול Green Bay Packers מכונים "Cheeseheads".',
+    triviaEn: 'America’s Dairyland, renowned for cheese production, and Green Bay Packers "Cheesehead" fans.',
   },
   WY: {
     id: 'WY',
@@ -841,6 +891,7 @@ export const STATES_DATA: Record<string, StateInfo> = {
     plateDesign: { bg: '#FFF7ED', text: '#7C2D12', border: '#FDBA74', accent: '#C2410C', badgeColor: '#9A3412' },
     samplePlateNumber: '1-1234',
     triviaHe: 'המדינה הכי פחות מאוכלסת בארה״ב! ביתו של הפארק הלאומי ילוסטון - הפארק הלאומי הראשון בעולם.',
+    triviaEn: 'Least populated US state! Home to Yellowstone National Park — the world’s very first national park.',
   },
 };
 

@@ -130,13 +130,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           spottedRecords={spottedRecords}
           targetState={targetState}
           language={language}
-          theme="vintage"
           plateVisualMode={plateVisualMode}
         />
       </div>
 
       {/* Modal Dialog Container */}
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden flex flex-col my-auto max-h-[90vh]">
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden flex flex-col my-auto max-h-[90vh]" dir={language === 'he' ? 'rtl' : 'ltr'}>
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-amber-50/60">
           <div className="flex items-center gap-2.5">
@@ -145,12 +144,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             </div>
             <div>
               <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
-                {language === 'he' ? 'שתף תמונת תמונה מרהיבה' : 'Share Graphic Card'}
+                {language === 'he' ? 'שיתוף כרטיס תמונה' : 'Share Graphic Card'}
               </h3>
               <p className="text-xs text-slate-500 font-medium">
                 {language === 'he'
-                  ? 'ייצא תמונה מעוצבת בסגנון וינטג׳ דרכים'
-                  : 'Export a vintage road-trip styled graphic card'}
+                  ? 'ייצא כרטיס תמונה לאורך, מותאם לשיתוף בנייד'
+                  : 'Export a vertical image card tailored for mobile sharing'}
               </p>
             </div>
           </div>
@@ -235,27 +234,26 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <span>💡</span>
               <span>
                 {language === 'he'
-                  ? 'ניתן להגדיל ולגרור את המפה לקבלת זווית התמונות המועדפת עליך!'
-                  : 'Drag and zoom the map to position your preferred shot before downloading!'}
+                  ? 'ניתן להגדיל ולגרור את המפה לקבלת הזווית המועדפת עליך!'
+                  : 'Drag and zoom the map to position your preferred view before downloading!'}
               </span>
             </div>
           )}
 
-          {/* Scaled Preview Box */}
-          <div className="rounded-2xl bg-stone-900 p-3 flex flex-col items-center justify-center overflow-hidden border border-stone-800 relative">
+          {/* Scaled Vertical Card Preview Box */}
+          <div className="rounded-2xl bg-stone-900 p-3 flex flex-col items-center justify-center overflow-hidden border border-stone-800 relative min-h-[380px]">
             <div className="w-full flex items-center justify-between text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2 px-1">
-              <span>{language === 'he' ? 'תצוגה מקדימה:' : 'Preview:'}</span>
-              <span className="text-amber-400">Roadtrip Vintage 🚗</span>
+              <span>{language === 'he' ? 'תצוגה מקדימה לאורך:' : 'Vertical Card Preview:'}</span>
+              <span className="text-amber-400">Mobile Portrait 📱🚗</span>
             </div>
 
-            <div className="w-full flex items-center justify-center overflow-hidden rounded-xl">
-              <div className="transform scale-[0.63] sm:scale-[0.70] origin-top -mb-32 sm:-mb-24">
+            <div className="w-full flex items-center justify-center overflow-hidden rounded-xl py-2">
+              <div className="transform scale-[0.45] sm:scale-[0.52] origin-top -mb-[330px] sm:-mb-[280px]">
                 <ShareableCard
                   cardType={cardType}
                   spottedRecords={spottedRecords}
                   targetState={targetState}
                   language={language}
-                  theme="vintage"
                   plateVisualMode={plateVisualMode}
                 />
               </div>

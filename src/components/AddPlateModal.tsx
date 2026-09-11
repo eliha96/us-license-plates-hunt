@@ -171,7 +171,7 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
         dir={language === 'he' ? 'rtl' : 'ltr'}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header - matching plate-hunt-usa.base44.app Y0 */}
+        {/* Header */}
         <div className="p-5 bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center font-black text-white text-base shadow-inner">
