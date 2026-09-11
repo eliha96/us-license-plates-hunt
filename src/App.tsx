@@ -20,6 +20,8 @@ import { StateDetailsModal } from './components/StateDetailsModal';
 import { AchievementToast } from './components/AchievementToast';
 import { ShareModal } from './components/ShareModal';
 import {
+  CANADA_PROVINCES_DATA,
+  MEXICO_DATA,
   ALL_BONUS_DATA,
   isCanadaUnlocked,
   isMexicoUnlocked,
@@ -325,6 +327,9 @@ export default function App() {
 
 
   const usFoundCount = Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length;
+  const canadaSpottedCount = Object.keys(spottedRecords).filter((id) => CANADA_PROVINCES_DATA[id]).length;
+  const mexicoSpottedCount = Object.keys(spottedRecords).filter((id) => MEXICO_DATA[id]).length;
+
   const canadaUnlocked = isCanadaUnlocked(usFoundCount);
   const mexicoUnlocked = isMexicoUnlocked(usFoundCount);
   const foundCount = usFoundCount;
@@ -465,82 +470,114 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Bonus Unlock Progress Cards: Bonus 1 (Canada) & Bonus 2 (Mexico) */}
+              {/* Bonus Unlock Progress Cards: Bonus 1 & Bonus 2 */}
               <div className="grid grid-cols-2 gap-2.5">
-                {/* Bonus 1: Canada */}
+                {/* Bonus 1 */}
                 <div
                   className={`p-3 rounded-2xl border transition-all flex flex-col justify-between ${
                     canadaUnlocked
                       ? 'bg-amber-500/10 border-amber-300/80 text-amber-950 shadow-xs'
-                      : 'bg-slate-50 border-slate-200/80 text-slate-700'
+                      : 'bg-slate-100/90 border-slate-200/80 text-slate-500 shadow-inner'
                   }`}
                 >
                   <div className="flex items-center justify-between font-extrabold text-xs mb-1">
                     <span className="flex items-center gap-1">
-                      <span>{canadaUnlocked ? '🔓' : '🔒'}</span>
-                      <span>{settings.language === 'he' ? 'בונוס 1: קנדה' : 'Bonus 1: Canada'}</span>
+                      <span>{canadaUnlocked ? '🇨🇦' : '🔒'}</span>
+                      <span>
+                        {canadaUnlocked
+                          ? settings.language === 'he'
+                            ? 'בונוס 1: קנדה'
+                            : 'Bonus 1: Canada'
+                          : settings.language === 'he'
+                          ? 'בונוס 1 (סודי)'
+                          : 'Bonus 1 (Secret)'}
+                      </span>
                     </span>
-                    <span className="text-[10px] font-mono opacity-80">
-                      {usFoundCount}/{CANADA_UNLOCK_THRESHOLD}
+                    {canadaUnlocked && (
+                      <span className="text-[10px] font-mono font-bold text-amber-700">
+                        {canadaSpottedCount}/9
+                      </span>
+                    )}
+                  </div>
+                  {canadaUnlocked ? (
+                    <>
+                      <div className="h-1.5 rounded-full bg-slate-200/80 overflow-hidden my-1">
+                        <div
+                          className="h-full rounded-full bg-amber-500 transition-all duration-500"
+                          style={{
+                            width: `${Math.min(100, Math.round((canadaSpottedCount / 9) * 100))}%`,
+                          }}
+                        />
+                      </div>
+                      <span className="text-[10px] font-bold text-amber-800 truncate">
+                        {canadaSpottedCount === 9
+                          ? settings.language === 'he'
+                            ? '🎉 הושלם! (9/9)'
+                            : '🎉 Complete! (9/9)'
+                          : settings.language === 'he'
+                          ? `נמצאו ${canadaSpottedCount} מתוך 9`
+                          : `Spotted ${canadaSpottedCount} of 9`}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-[10px] font-bold text-slate-400 mt-1">
+                      🔒 {settings.language === 'he' ? 'נעול (יתגלה בהמשך)' : 'Locked (Reveals later)'}
                     </span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-slate-200/80 overflow-hidden my-1">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        canadaUnlocked ? 'bg-amber-500' : 'bg-slate-400'
-                      }`}
-                      style={{
-                        width: `${Math.min(100, Math.round((usFoundCount / CANADA_UNLOCK_THRESHOLD) * 100))}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-500 truncate">
-                    {canadaUnlocked
-                      ? settings.language === 'he'
-                        ? '🎉 פתוח! (9 פרובינציות)'
-                        : '🎉 Unlocked! (9 Provs)'
-                      : settings.language === 'he'
-                      ? `עוד ${Math.max(0, CANADA_UNLOCK_THRESHOLD - usFoundCount)} מדינות לפתיחה`
-                      : `${Math.max(0, CANADA_UNLOCK_THRESHOLD - usFoundCount)} states to unlock`}
-                  </span>
+                  )}
                 </div>
 
-                {/* Bonus 2: Mexico */}
+                {/* Bonus 2 */}
                 <div
                   className={`p-3 rounded-2xl border transition-all flex flex-col justify-between ${
                     mexicoUnlocked
                       ? 'bg-emerald-500/10 border-emerald-300/80 text-emerald-950 shadow-xs'
-                      : 'bg-slate-50 border-slate-200/80 text-slate-700'
+                      : 'bg-slate-100/90 border-slate-200/80 text-slate-500 shadow-inner'
                   }`}
                 >
                   <div className="flex items-center justify-between font-extrabold text-xs mb-1">
                     <span className="flex items-center gap-1">
-                      <span>{mexicoUnlocked ? '🔓' : '🔒'}</span>
-                      <span>{settings.language === 'he' ? 'בונוס 2: מקסיקו' : 'Bonus 2: Mexico'}</span>
+                      <span>{mexicoUnlocked ? '🇲🇽' : '🔒'}</span>
+                      <span>
+                        {mexicoUnlocked
+                          ? settings.language === 'he'
+                            ? 'בונוס 2: מקסיקו'
+                            : 'Bonus 2: Mexico'
+                          : settings.language === 'he'
+                          ? 'בונוס 2 (סודי)'
+                          : 'Bonus 2 (Secret)'}
+                      </span>
                     </span>
-                    <span className="text-[10px] font-mono opacity-80">
-                      {usFoundCount}/{MEXICO_UNLOCK_THRESHOLD}
+                    {mexicoUnlocked && (
+                      <span className="text-[10px] font-mono font-bold text-emerald-700">
+                        {mexicoSpottedCount}/1
+                      </span>
+                    )}
+                  </div>
+                  {mexicoUnlocked ? (
+                    <>
+                      <div className="h-1.5 rounded-full bg-slate-200/80 overflow-hidden my-1">
+                        <div
+                          className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                          style={{
+                            width: `${Math.min(100, Math.round((mexicoSpottedCount / 1) * 100))}%`,
+                          }}
+                        />
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-800 truncate">
+                        {mexicoSpottedCount === 1
+                          ? settings.language === 'he'
+                            ? '🎉 הושלם! (1/1)'
+                            : '🎉 Complete! (1/1)'
+                          : settings.language === 'he'
+                          ? `נמצאו ${mexicoSpottedCount} מתוך 1`
+                          : `Spotted ${mexicoSpottedCount} of 1`}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-[10px] font-bold text-slate-400 mt-1">
+                      🔒 {settings.language === 'he' ? 'נעול (יתגלה בהמשך)' : 'Locked (Reveals later)'}
                     </span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-slate-200/80 overflow-hidden my-1">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        mexicoUnlocked ? 'bg-emerald-500' : 'bg-slate-400'
-                      }`}
-                      style={{
-                        width: `${Math.min(100, Math.round((usFoundCount / MEXICO_UNLOCK_THRESHOLD) * 100))}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-500 truncate">
-                    {mexicoUnlocked
-                      ? settings.language === 'he'
-                        ? '🎉 פתוח! (לוחית 1 דרושה)'
-                        : '🎉 Unlocked! (1 Plate Needed)'
-                      : settings.language === 'he'
-                      ? `עוד ${Math.max(0, MEXICO_UNLOCK_THRESHOLD - usFoundCount)} מדינות לפתיחה`
-                      : `${Math.max(0, MEXICO_UNLOCK_THRESHOLD - usFoundCount)} states to unlock`}
-                  </span>
+                  )}
                 </div>
               </div>
 

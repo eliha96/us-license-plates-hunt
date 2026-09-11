@@ -8,7 +8,11 @@ import {
   isCanadaUnlocked,
   isMexicoUnlocked,
 } from '../data/bonusData';
-import { ZoomIn, ZoomOut, RotateCcw, Lock } from 'lucide-react';
+import {
+  CANADA_PROVINCES_GEOJSON,
+  MEXICO_GEOJSON,
+} from '../data/bonusGeoJson';
+import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
 const REGION_COLORS: Record<string, string> = {
   West: '#f59e0b', // warm gold/amber
@@ -42,7 +46,6 @@ export const MapView: React.FC<MapViewProps> = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
-  const bonusLayerGroupRef = useRef<L.LayerGroup | null>(null);
 
   const [geoData, setGeoData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -52,18 +55,26 @@ export const MapView: React.FC<MapViewProps> = ({
   const canadaUnlocked = isCanadaUnlocked(usFoundCount);
   const mexicoUnlocked = isMexicoUnlocked(usFoundCount);
 
-  // Map state name lowercase -> StateInfo
-  const stateByName = useRef<Record<string, StateInfo>>({});
+  // Map all state / province IDs -> StateInfo
+  const allStateDataMap = useRef<Record<string, StateInfo>>({});
   useEffect(() => {
     const map: Record<string, StateInfo> = {};
     Object.values(STATES_DATA).forEach((st) => {
       map[st.name.toLowerCase()] = st;
       map[st.id.toLowerCase()] = st;
     });
-    stateByName.current = map;
+    Object.values(CANADA_PROVINCES_DATA).forEach((st) => {
+      map[st.name.toLowerCase()] = st;
+      map[st.id.toLowerCase()] = st;
+    });
+    Object.values(MEXICO_DATA).forEach((st) => {
+      map[st.name.toLowerCase()] = st;
+      map[st.id.toLowerCase()] = st;
+    });
+    allStateDataMap.current = map;
   }, []);
 
-  // Fetch GeoJSON once
+  // Fetch US GeoJSON once
   useEffect(() => {
     let isMounted = true;
     const loadGeoJson = async () => {
@@ -82,7 +93,6 @@ export const MapView: React.FC<MapViewProps> = ({
       }
 
       try {
-        // Try local cached file first
         let res = await fetch('/us-states.json');
         if (!res.ok) {
           res = await fetch(
@@ -140,7 +150,6 @@ export const MapView: React.FC<MapViewProps> = ({
       }
     ).addTo(map);
 
-    bonusLayerGroupRef.current = L.layerGroup().addTo(map);
     mapInstanceRef.current = map;
 
     return () => {
@@ -149,182 +158,128 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, [isStatic]);
 
-  // Update Map Center / View based on mapRegion tab selection
+  // Update Map View Center on Region Change
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-
     const isSmall = window.innerWidth < 640;
 
     if (mapRegion === 'us') {
       map.flyTo([37.8, -96.9], isStatic ? 3.6 : isSmall ? 3.4 : 4, { duration: 0.8 });
     } else if (mapRegion === 'canada') {
-      map.flyTo([55.0, -96.0], isSmall ? 3.2 : 3.8, { duration: 0.8 });
+      map.flyTo([56.0, -100.0], isSmall ? 3.0 : 3.6, { duration: 0.8 });
     } else if (mapRegion === 'mexico') {
       map.flyTo([23.6, -102.5], isSmall ? 4.2 : 4.8, { duration: 0.8 });
     }
   }, [mapRegion, isStatic]);
 
-  // Update GeoJSON & Bonus Markers when spottedRecords or mapRegion changes
+  // Render Vector GeoJSON Polygons for Active Map Region
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
 
-    // 1. Update GeoJSON layer for US states
-    if (geoData) {
-      if (geoJsonLayerRef.current) {
-        map.removeLayer(geoJsonLayerRef.current);
-        geoJsonLayerRef.current = null;
-      }
+    if (geoJsonLayerRef.current) {
+      map.removeLayer(geoJsonLayerRef.current);
+      geoJsonLayerRef.current = null;
+    }
 
-      const foundSet = new Set(Object.keys(spottedRecords));
+    const foundSet = new Set(Object.keys(spottedRecords));
 
-      const getFeatureStyle = (feature: any) => {
-        const stateName = feature.properties?.name?.toLowerCase();
-        const state = stateByName.current[stateName];
-        const isFound = state ? foundSet.has(state.id) : false;
-        const isSelected = state ? selectedStateId === state.id : false;
+    // Determine target GeoJSON data
+    let targetGeoJsonData: any = null;
+    if (mapRegion === 'us' && geoData) {
+      targetGeoJsonData = geoData;
+    } else if (mapRegion === 'canada') {
+      targetGeoJsonData = CANADA_PROVINCES_GEOJSON;
+    } else if (mapRegion === 'mexico') {
+      targetGeoJsonData = MEXICO_GEOJSON;
+    }
 
-        if (isFound) {
-          const regionColor = (state && REGION_COLORS[state.region]) || '#6366f1';
-          return {
-            fillColor: regionColor,
-            weight: isSelected ? 2.8 : 1.2,
-            color: isSelected ? '#0f172a' : '#ffffff',
-            fillOpacity: 0.92,
-          };
-        }
+    if (!targetGeoJsonData) return;
 
-        if (isSelected) {
-          return {
-            fillColor: '#cbd5e1',
-            weight: 2.2,
-            color: '#4f46e5',
-            fillOpacity: 0.8,
-          };
-        }
+    const getFeatureStyle = (feature: any) => {
+      const idOrName = (feature.properties?.id || feature.properties?.name || '').toLowerCase();
+      const state = allStateDataMap.current[idOrName];
+      const isFound = state ? foundSet.has(state.id) : false;
+      const isSelected = state ? selectedStateId === state.id : false;
+
+      if (isFound) {
+        const regionColor =
+          state?.country === 'Canada'
+            ? '#d97706'
+            : state?.country === 'Mexico'
+            ? '#059669'
+            : REGION_COLORS[state?.region || ''] || '#6366f1';
 
         return {
-          fillColor: '#cbd5e1',
-          weight: 0.7,
-          color: '#ffffff',
-          fillOpacity: mapRegion === 'us' ? 0.55 : 0.25,
+          fillColor: regionColor,
+          weight: isSelected ? 2.8 : 1.4,
+          color: isSelected ? '#0f172a' : '#ffffff',
+          fillOpacity: 0.92,
         };
-      };
-
-      const onEachFeature = (feature: any, layer: L.Layer) => {
-        const stateName = feature.properties?.name || '';
-        const state = stateByName.current[stateName.toLowerCase()];
-        const isFound = state ? foundSet.has(state.id) : false;
-
-        const titleText = state
-          ? `${state.name} (${state.nameHe})${isFound ? ' ✓' : ''}`
-          : `${stateName}${isFound ? ' ✓' : ''}`;
-
-        layer.bindTooltip(titleText, {
-          sticky: true,
-          direction: 'auto',
-          className: 'custom-state-leaflet-tooltip',
-        });
-
-        layer.on({
-          mouseover: (e: L.LeafletMouseEvent) => {
-            const l = e.target;
-            l.setStyle({
-              weight: 2,
-              color: '#0f172a',
-              fillOpacity: 0.96,
-            });
-          },
-          mouseout: (e: L.LeafletMouseEvent) => {
-            if (geoJsonLayerRef.current) {
-              geoJsonLayerRef.current.resetStyle(e.target);
-            }
-          },
-          click: () => {
-            if (state && onSelectState) {
-              onSelectState(state);
-            }
-          },
-        });
-      };
-
-      const layer = L.geoJSON(geoData, {
-        style: getFeatureStyle,
-        onEachFeature: onEachFeature,
-      }).addTo(map);
-
-      geoJsonLayerRef.current = layer;
-    }
-
-    // 2. Render Interactive Markers for Canada & Mexico
-    if (bonusLayerGroupRef.current) {
-      bonusLayerGroupRef.current.clearLayers();
-
-      const foundSet = new Set(Object.keys(spottedRecords));
-      const targetBonusStates: StateInfo[] = [];
-
-      if (mapRegion === 'canada' && canadaUnlocked) {
-        targetBonusStates.push(...Object.values(CANADA_PROVINCES_DATA));
-      } else if (mapRegion === 'mexico' && mexicoUnlocked) {
-        targetBonusStates.push(...Object.values(MEXICO_DATA));
-      } else if (mapRegion === 'us') {
-        // Add subtle bonus indicators on US view if unlocked
-        if (canadaUnlocked) targetBonusStates.push(...Object.values(CANADA_PROVINCES_DATA));
-        if (mexicoUnlocked) targetBonusStates.push(...Object.values(MEXICO_DATA));
       }
 
-      targetBonusStates.forEach((st) => {
-        const isFound = foundSet.has(st.id);
-        const bgColor = isFound
-          ? st.country === 'Canada'
-            ? '#d97706'
-            : '#059669'
-          : '#64748b';
+      if (isSelected) {
+        return {
+          fillColor: '#cbd5e1',
+          weight: 2.2,
+          color: '#4f46e5',
+          fillOpacity: 0.8,
+        };
+      }
 
-        const customHtml = `
-          <div style="
-            background-color: ${bgColor};
-            color: #ffffff;
-            font-weight: 900;
-            font-size: 11px;
-            padding: 3px 7px;
-            border-radius: 9999px;
-            border: 2px solid #ffffff;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
-            white-space: nowrap;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            transform: translate(-50%, -50%);
-          ">
-            <span>${st.country === 'Canada' ? '🇨🇦' : '🇲🇽'} ${st.id}</span>
-            ${isFound ? '<span style="font-weight:900;">✓</span>' : ''}
-          </div>
-        `;
+      return {
+        fillColor: '#cbd5e1',
+        weight: 0.8,
+        color: '#ffffff',
+        fillOpacity: 0.6,
+      };
+    };
 
-        const icon = L.divIcon({
-          html: customHtml,
-          className: 'custom-bonus-map-marker',
-          iconSize: [0, 0],
-        });
+    const onEachFeature = (feature: any, layer: L.Layer) => {
+      const idOrName = (feature.properties?.id || feature.properties?.name || '').toLowerCase();
+      const state = allStateDataMap.current[idOrName];
+      const isFound = state ? foundSet.has(state.id) : false;
 
-        const marker = L.marker([st.lat, st.lng], { icon });
+      const titleText = state
+        ? `${state.name} (${state.nameHe})${isFound ? ' ✓' : ''}`
+        : `${feature.properties?.name || ''}${isFound ? ' ✓' : ''}`;
 
-        marker.bindTooltip(`${st.name} (${st.nameHe})${isFound ? ' ✓' : ''}`, {
-          direction: 'top',
-          offset: [0, -10],
-        });
-
-        marker.on('click', () => {
-          if (onSelectState) onSelectState(st);
-        });
-
-        bonusLayerGroupRef.current?.addLayer(marker);
+      layer.bindTooltip(titleText, {
+        sticky: true,
+        direction: 'auto',
+        className: 'custom-state-leaflet-tooltip',
       });
-    }
-  }, [geoData, spottedRecords, selectedStateId, onSelectState, mapRegion, canadaUnlocked, mexicoUnlocked]);
+
+      layer.on({
+        mouseover: (e: L.LeafletMouseEvent) => {
+          const l = e.target;
+          l.setStyle({
+            weight: 2.5,
+            color: '#0f172a',
+            fillOpacity: 0.96,
+          });
+        },
+        mouseout: (e: L.LeafletMouseEvent) => {
+          if (geoJsonLayerRef.current) {
+            geoJsonLayerRef.current.resetStyle(e.target);
+          }
+        },
+        click: () => {
+          if (state && onSelectState) {
+            onSelectState(state);
+          }
+        },
+      });
+    };
+
+    const layer = L.geoJSON(targetGeoJsonData, {
+      style: getFeatureStyle,
+      onEachFeature: onEachFeature,
+    }).addTo(map);
+
+    geoJsonLayerRef.current = layer;
+  }, [geoData, spottedRecords, selectedStateId, onSelectState, mapRegion]);
 
   // Zoom control handlers
   const handleZoomIn = () => {
@@ -343,7 +298,7 @@ export const MapView: React.FC<MapViewProps> = ({
     if (mapRegion === 'us') {
       map.setView([37.8, -96.9], isStatic ? 3.6 : isSmall ? 3.4 : 4);
     } else if (mapRegion === 'canada') {
-      map.setView([55.0, -96.0], isSmall ? 3.2 : 3.8);
+      map.setView([56.0, -100.0], isSmall ? 3.0 : 3.6);
     } else if (mapRegion === 'mexico') {
       map.setView([23.6, -102.5], isSmall ? 4.2 : 4.8);
     }
@@ -351,14 +306,14 @@ export const MapView: React.FC<MapViewProps> = ({
 
   return (
     <div className="space-y-2">
-      {/* Map Country & Region Selector Tabs */}
+      {/* Map Country Selector Tabs (Only unlocked bonus tabs appear) */}
       {!isStatic && (
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
             <button
               type="button"
               onClick={() => setMapRegion('us')}
-              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
+              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                 mapRegion === 'us'
                   ? 'bg-indigo-600 text-white shadow-xs'
                   : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
@@ -368,11 +323,11 @@ export const MapView: React.FC<MapViewProps> = ({
               <span>{language === 'he' ? 'מפת ארה״ב' : 'US Map'}</span>
             </button>
 
-            {canadaUnlocked ? (
+            {canadaUnlocked && (
               <button
                 type="button"
                 onClick={() => setMapRegion('canada')}
-                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
+                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                   mapRegion === 'canada'
                     ? 'bg-amber-600 text-white shadow-xs'
                     : 'bg-white text-amber-900 border border-amber-200 hover:bg-amber-50'
@@ -381,18 +336,13 @@ export const MapView: React.FC<MapViewProps> = ({
                 <span>🇨🇦</span>
                 <span>{language === 'he' ? 'מפת קנדה (בונוס 1)' : 'Canada Map (Bonus 1)'}</span>
               </button>
-            ) : (
-              <div className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1 shrink-0 opacity-70">
-                <Lock className="w-3 h-3 text-slate-400" />
-                <span>🇨🇦 {language === 'he' ? 'קנדה (נעול)' : 'Canada (Locked)'}</span>
-              </div>
             )}
 
-            {mexicoUnlocked ? (
+            {mexicoUnlocked && (
               <button
                 type="button"
                 onClick={() => setMapRegion('mexico')}
-                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
+                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                   mapRegion === 'mexico'
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'bg-white text-emerald-900 border border-emerald-200 hover:bg-emerald-50'
@@ -401,11 +351,6 @@ export const MapView: React.FC<MapViewProps> = ({
                 <span>🇲🇽</span>
                 <span>{language === 'he' ? 'מפת מקסיקו (בונוס 2)' : 'Mexico Map (Bonus 2)'}</span>
               </button>
-            ) : (
-              <div className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1 shrink-0 opacity-70">
-                <Lock className="w-3 h-3 text-slate-400" />
-                <span>🇲🇽 {language === 'he' ? 'מקסיקו (נעול)' : 'Mexico (Locked)'}</span>
-              </div>
             )}
           </div>
 
@@ -494,7 +439,7 @@ export const MapView: React.FC<MapViewProps> = ({
           <div className="absolute bottom-2.5 right-3 z-20 pointer-events-none flex items-center gap-1.5 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-full text-[11px] font-semibold text-slate-600 border border-slate-200/80 shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
             <span>
-              {language === 'he' ? 'לחץ על מדינה לפרטים' : 'Tap a state for details'}
+              {language === 'he' ? 'לחץ על טריטוריה לפרטים' : 'Tap a territory for details'}
             </span>
           </div>
         )}
@@ -502,4 +447,5 @@ export const MapView: React.FC<MapViewProps> = ({
     </div>
   );
 };
+
 

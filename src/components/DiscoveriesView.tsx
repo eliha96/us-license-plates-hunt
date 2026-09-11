@@ -126,53 +126,53 @@ export const DiscoveriesView: React.FC<DiscoveriesViewProps> = ({
 
       {subTab === 'states' ? (
         <div className="space-y-3">
-          {/* Country Category Selector Pills */}
-          <div className="flex gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
-            <button
-              type="button"
-              onClick={() => setCountryCategory('us')}
-              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
-                countryCategory === 'us'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <span>🇺🇸</span>
-              <span>{language === 'he' ? 'ארה״ב (50)' : 'USA (50)'}</span>
-            </button>
+          {/* Country Category Selector Pills (Only shown when bonus unlocked) */}
+          {(canadaUnlocked || mexicoUnlocked) && (
+            <div className="flex gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+              <button
+                type="button"
+                onClick={() => setCountryCategory('us')}
+                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+                  countryCategory === 'us'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <span>🇺🇸</span>
+                <span>{language === 'he' ? 'ארה״ב (50)' : 'USA (50)'}</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setCountryCategory('canada')}
-              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
-                countryCategory === 'canada'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : canadaUnlocked
-                  ? 'bg-amber-50 text-amber-900 hover:bg-amber-100'
-                  : 'bg-slate-100 text-slate-400 opacity-80'
-              }`}
-            >
-              <span>🇨🇦</span>
-              <span>{language === 'he' ? 'קנדה (בונוס)' : 'Canada (Bonus)'}</span>
-              {!canadaUnlocked && <Lock className="w-3 h-3 text-slate-400" />}
-            </button>
+              {canadaUnlocked && (
+                <button
+                  type="button"
+                  onClick={() => setCountryCategory('canada')}
+                  className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+                    countryCategory === 'canada'
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'bg-amber-50 text-amber-900 hover:bg-amber-100'
+                  }`}
+                >
+                  <span>🇨🇦</span>
+                  <span>{language === 'he' ? 'קנדה (בונוס 1)' : 'Canada (Bonus 1)'}</span>
+                </button>
+              )}
 
-            <button
-              type="button"
-              onClick={() => setCountryCategory('mexico')}
-              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
-                countryCategory === 'mexico'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : mexicoUnlocked
-                  ? 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100'
-                  : 'bg-slate-100 text-slate-400 opacity-80'
-              }`}
-            >
-              <span>🇲🇽</span>
-              <span>{language === 'he' ? 'מקסיקו (בונוס)' : 'Mexico (Bonus)'}</span>
-              {!mexicoUnlocked && <Lock className="w-3 h-3 text-slate-400" />}
-            </button>
-          </div>
+              {mexicoUnlocked && (
+                <button
+                  type="button"
+                  onClick={() => setCountryCategory('mexico')}
+                  className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+                    countryCategory === 'mexico'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100'
+                  }`}
+                >
+                  <span>🇲🇽</span>
+                  <span>{language === 'he' ? 'מקסיקו (בונוס 2)' : 'Mexico (Bonus 2)'}</span>
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Locked Bonus Notice for Canada */}
           {countryCategory === 'canada' && !canadaUnlocked && (
