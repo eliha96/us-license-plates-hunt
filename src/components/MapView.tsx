@@ -208,8 +208,18 @@ export const MapView: React.FC<MapViewProps> = ({
     const getFeatureStyle = (feature: any) => {
       const idOrName = (feature.properties?.id || feature.properties?.name || '').toLowerCase();
       const state = allStateDataMap.current[idOrName];
-      const isFound = state ? foundSet.has(state.id) : false;
-      const isSelected = state ? selectedStateId === state.id : false;
+
+      if (!state) {
+        return {
+          fillColor: '#e2e8f0',
+          weight: 0.5,
+          color: '#ffffff',
+          fillOpacity: 0.4,
+        };
+      }
+
+      const isFound = foundSet.has(state.id);
+      const isSelected = selectedStateId === state.id;
 
       if (isFound) {
         const regionColor =
@@ -247,11 +257,24 @@ export const MapView: React.FC<MapViewProps> = ({
     const onEachFeature = (feature: any, layer: L.Layer) => {
       const idOrName = (feature.properties?.id || feature.properties?.name || '').toLowerCase();
       const state = allStateDataMap.current[idOrName];
-      const isFound = state ? foundSet.has(state.id) : false;
 
-      const titleText = state
-        ? `${state.name} (${state.nameHe})${isFound ? ' ✓' : ''}`
-        : `${feature.properties?.name || ''}${isFound ? ' ✓' : ''}`;
+      if (!state) {
+        const name = feature.properties?.name || '';
+        layer.bindTooltip(
+          language === 'he'
+            ? `${name} (לא חלק מהמשחק)`
+            : `${name} (Not in game)`,
+          {
+            sticky: true,
+            direction: 'auto',
+            className: 'custom-state-leaflet-tooltip-disabled',
+          }
+        );
+        return;
+      }
+
+      const isFound = foundSet.has(state.id);
+      const titleText = `${state.name} (${state.nameHe})${isFound ? ' ✓' : ''}`;
 
       layer.bindTooltip(titleText, {
         sticky: true,

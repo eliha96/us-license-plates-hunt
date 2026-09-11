@@ -121,15 +121,15 @@ export const BonusUnlockModal: React.FC<BonusUnlockModalProps> = ({
                   : 'You can now spot & log license plates from the 9 Canadian border provinces:'}
               </p>
               <div className="bg-white/80 p-2.5 rounded-xl border border-amber-200 font-bold text-[11px] text-amber-900 grid grid-cols-2 gap-1 text-center">
-                <span>BC · קולומביה הבריטית</span>
-                <span>AB · אלברטה</span>
-                <span>SK · ססקצ׳ואן</span>
-                <span>MB · מניטובה</span>
-                <span>ON · אונטריו</span>
-                <span>QC · קוויבק</span>
-                <span>NB · ניו ברונזוויק</span>
-                <span>NS · נובה סקוטיה</span>
-                <span className="col-span-2">YT · יוקון</span>
+                <span>{language === 'he' ? 'BC · קולומביה הבריטית' : 'BC · British Columbia'}</span>
+                <span>{language === 'he' ? 'AB · אלברטה' : 'AB · Alberta'}</span>
+                <span>{language === 'he' ? 'SK · ססקצ׳ואן' : 'SK · Saskatchewan'}</span>
+                <span>{language === 'he' ? 'MB · מניטובה' : 'MB · Manitoba'}</span>
+                <span>{language === 'he' ? 'ON · אונטריו' : 'ON · Ontario'}</span>
+                <span>{language === 'he' ? 'QC · קוויבק' : 'QC · Quebec'}</span>
+                <span>{language === 'he' ? 'NB · ניו ברונזוויק' : 'NB · New Brunswick'}</span>
+                <span>{language === 'he' ? 'NS · נובה סקוטיה' : 'NS · Nova Scotia'}</span>
+                <span className="col-span-2">{language === 'he' ? 'YT · יוקון' : 'YT · Yukon'}</span>
               </div>
               <p className="text-[11px] opacity-80 italic">
                 💡 {language === 'he' ? 'הערה: הבונוס מעניק תגים ויומן תמונות נוסף ללא הפחתת אחוז ה-50 של ארה״ב.' : 'Note: Bonus items add unique badges & sightings without lowering your core 50-state progress.'}
@@ -144,7 +144,7 @@ export const BonusUnlockModal: React.FC<BonusUnlockModalProps> = ({
               </p>
               <div className="bg-white/80 p-3 rounded-xl border border-emerald-200 font-extrabold text-xs text-emerald-900 text-center flex items-center justify-center gap-2">
                 <MapPin className="w-4 h-4 text-emerald-600" />
-                <span>MX · Mexico / מקסיקו (1/1)</span>
+                <span>{language === 'he' ? 'MX · מקסיקו (1/1)' : 'MX · Mexico (1/1)'}</span>
               </div>
             </div>
           )}
@@ -161,7 +161,7 @@ export const BonusUnlockModal: React.FC<BonusUnlockModalProps> = ({
           }`}
         >
           <Check className="w-4 h-4 stroke-[3]" />
-          <span>{language === 'he' ? 'הבנתי, בוא נמשיך! 🚀' : "Got It, Let's Go! 🚀"}</span>
+          <span>{language === 'he' ? 'הבנתי, בוא נמשיך!' : "Got It, Let's Go!"}</span>
         </button>
       </div>
     </div>
