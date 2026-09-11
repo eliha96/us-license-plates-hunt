@@ -18,6 +18,7 @@ import { AchievementsView } from './components/AchievementsView';
 import { AddPlateModal } from './components/AddPlateModal';
 import { StateDetailsModal } from './components/StateDetailsModal';
 import { AchievementToast } from './components/AchievementToast';
+import { ShareModal } from './components/ShareModal';
 import { ALL_BONUS_DATA, isCanadaUnlocked, isMexicoUnlocked } from './data/bonusData';
 import { InstallPwaBanner } from './components/InstallPwaBanner';
 
