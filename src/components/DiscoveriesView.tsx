@@ -7,6 +7,8 @@ import {
   ALL_BONUS_DATA,
   isCanadaUnlocked,
   isMexicoUnlocked,
+  CANADA_UNLOCK_THRESHOLD,
+  MEXICO_UNLOCK_THRESHOLD,
 } from '../data/bonusData';
 import {
   Camera,
@@ -183,17 +185,17 @@ export const DiscoveriesView: React.FC<DiscoveriesViewProps> = ({
               </h3>
               <p className="text-xs text-amber-800 font-medium max-w-xs mx-auto">
                 {language === 'he'
-                  ? `גלו עוד ${20 - usFoundCount} מדינות בארה״ב כדי לפתוח את 9 הפרובינציות בגבול קנדה!`
-                  : `Spot ${20 - usFoundCount} more US states to unlock Canada’s 9 border provinces!`}
+                  ? `גלו עוד ${Math.max(0, CANADA_UNLOCK_THRESHOLD - usFoundCount)} מדינות בארה״ב כדי לפתוח את 9 הפרובינציות בגבול קנדה!`
+                  : `Spot ${Math.max(0, CANADA_UNLOCK_THRESHOLD - usFoundCount)} more US states to unlock Canada’s 9 border provinces!`}
               </p>
               <div className="w-full bg-amber-200 h-2 rounded-full overflow-hidden max-w-xs mx-auto">
                 <div
                   className="bg-amber-600 h-full rounded-full transition-all"
-                  style={{ width: `${(usFoundCount / 20) * 100}%` }}
+                  style={{ width: `${Math.min(100, (usFoundCount / CANADA_UNLOCK_THRESHOLD) * 100)}%` }}
                 />
               </div>
               <p className="text-[10px] font-bold text-amber-700">
-                {usFoundCount}/20 {language === 'he' ? 'מדינות ארה״ב נמצאו' : 'US States Spotted'}
+                {usFoundCount}/{CANADA_UNLOCK_THRESHOLD} {language === 'he' ? 'מדינות ארה״ב נמצאו' : 'US States Spotted'}
               </p>
             </div>
           )}
@@ -209,17 +211,17 @@ export const DiscoveriesView: React.FC<DiscoveriesViewProps> = ({
               </h3>
               <p className="text-xs text-emerald-800 font-medium max-w-xs mx-auto">
                 {language === 'he'
-                  ? `גלו עוד ${40 - usFoundCount} מדינות בארה״ב כדי לפתוח את לוחית הבונוס של מקסיקו!`
-                  : `Spot ${40 - usFoundCount} more US states to unlock Mexico’s bonus license plate!`}
+                  ? `גלו עוד ${Math.max(0, MEXICO_UNLOCK_THRESHOLD - usFoundCount)} מדינות בארה״ב כדי לפתוח את לוחית הבונוס של מקסיקו!`
+                  : `Spot ${Math.max(0, MEXICO_UNLOCK_THRESHOLD - usFoundCount)} more US states to unlock Mexico’s bonus license plate!`}
               </p>
               <div className="w-full bg-emerald-200 h-2 rounded-full overflow-hidden max-w-xs mx-auto">
                 <div
                   className="bg-emerald-600 h-full rounded-full transition-all"
-                  style={{ width: `${(usFoundCount / 40) * 100}%` }}
+                  style={{ width: `${Math.min(100, (usFoundCount / MEXICO_UNLOCK_THRESHOLD) * 100)}%` }}
                 />
               </div>
               <p className="text-[10px] font-bold text-emerald-700">
-                {usFoundCount}/40 {language === 'he' ? 'מדינות ארה״ב נמצאו' : 'US States Spotted'}
+                {usFoundCount}/{MEXICO_UNLOCK_THRESHOLD} {language === 'he' ? 'מדינות ארה״ב נמצאו' : 'US States Spotted'}
               </p>
             </div>
           )}

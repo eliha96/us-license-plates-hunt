@@ -19,8 +19,15 @@ import { AddPlateModal } from './components/AddPlateModal';
 import { StateDetailsModal } from './components/StateDetailsModal';
 import { AchievementToast } from './components/AchievementToast';
 import { ShareModal } from './components/ShareModal';
-import { ALL_BONUS_DATA, isCanadaUnlocked, isMexicoUnlocked } from './data/bonusData';
+import {
+  ALL_BONUS_DATA,
+  isCanadaUnlocked,
+  isMexicoUnlocked,
+  CANADA_UNLOCK_THRESHOLD,
+  MEXICO_UNLOCK_THRESHOLD,
+} from './data/bonusData';
 import { InstallPwaBanner } from './components/InstallPwaBanner';
+import { BonusUnlockModal } from './components/BonusUnlockModal';
 
 import {
   Car,
@@ -259,18 +266,10 @@ export default function App() {
     const prevUs = prevUsCountRef.current;
     const currentUs = Object.keys(updatedRecords).filter((id) => STATES_DATA[id]).length;
 
-    if (prevUs < 20 && currentUs >= 20) {
+    if (prevUs < CANADA_UNLOCK_THRESHOLD && currentUs >= CANADA_UNLOCK_THRESHOLD) {
       setBonusUnlockToast({ type: 'canada' });
-      sounds.playVictorySound();
-      try {
-        confetti({ particleCount: 110, spread: 85, origin: { y: 0.55 } });
-      } catch {}
-    } else if (prevUs < 40 && currentUs >= 40) {
+    } else if (prevUs < MEXICO_UNLOCK_THRESHOLD && currentUs >= MEXICO_UNLOCK_THRESHOLD) {
       setBonusUnlockToast({ type: 'mexico' });
-      sounds.playVictorySound();
-      try {
-        confetti({ particleCount: 130, spread: 95, origin: { y: 0.55 } });
-      } catch {}
     }
 
     prevUsCountRef.current = currentUs;
@@ -325,7 +324,10 @@ export default function App() {
   };
 
 
-  const foundCount = Object.keys(spottedRecords).length;
+  const usFoundCount = Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length;
+  const canadaUnlocked = isCanadaUnlocked(usFoundCount);
+  const mexicoUnlocked = isMexicoUnlocked(usFoundCount);
+  const foundCount = usFoundCount;
   const remainingCount = 50 - foundCount;
   const percentComplete = Math.round((foundCount / 50) * 100);
 
@@ -460,6 +462,85 @@ export default function App() {
                       </span>
                     </button>
                   </div>
+                </div>
+              </div>
+
+              {/* Bonus Unlock Progress Cards: Bonus 1 (Canada) & Bonus 2 (Mexico) */}
+              <div className="grid grid-cols-2 gap-2.5">
+                {/* Bonus 1: Canada */}
+                <div
+                  className={`p-3 rounded-2xl border transition-all flex flex-col justify-between ${
+                    canadaUnlocked
+                      ? 'bg-amber-500/10 border-amber-300/80 text-amber-950 shadow-xs'
+                      : 'bg-slate-50 border-slate-200/80 text-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between font-extrabold text-xs mb-1">
+                    <span className="flex items-center gap-1">
+                      <span>{canadaUnlocked ? '🔓' : '🔒'}</span>
+                      <span>{settings.language === 'he' ? 'בונוס 1: קנדה' : 'Bonus 1: Canada'}</span>
+                    </span>
+                    <span className="text-[10px] font-mono opacity-80">
+                      {usFoundCount}/{CANADA_UNLOCK_THRESHOLD}
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-slate-200/80 overflow-hidden my-1">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        canadaUnlocked ? 'bg-amber-500' : 'bg-slate-400'
+                      }`}
+                      style={{
+                        width: `${Math.min(100, Math.round((usFoundCount / CANADA_UNLOCK_THRESHOLD) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 truncate">
+                    {canadaUnlocked
+                      ? settings.language === 'he'
+                        ? '🎉 פתוח! (9 פרובינציות)'
+                        : '🎉 Unlocked! (9 Provs)'
+                      : settings.language === 'he'
+                      ? `עוד ${Math.max(0, CANADA_UNLOCK_THRESHOLD - usFoundCount)} מדינות לפתיחה`
+                      : `${Math.max(0, CANADA_UNLOCK_THRESHOLD - usFoundCount)} states to unlock`}
+                  </span>
+                </div>
+
+                {/* Bonus 2: Mexico */}
+                <div
+                  className={`p-3 rounded-2xl border transition-all flex flex-col justify-between ${
+                    mexicoUnlocked
+                      ? 'bg-emerald-500/10 border-emerald-300/80 text-emerald-950 shadow-xs'
+                      : 'bg-slate-50 border-slate-200/80 text-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between font-extrabold text-xs mb-1">
+                    <span className="flex items-center gap-1">
+                      <span>{mexicoUnlocked ? '🔓' : '🔒'}</span>
+                      <span>{settings.language === 'he' ? 'בונוס 2: מקסיקו' : 'Bonus 2: Mexico'}</span>
+                    </span>
+                    <span className="text-[10px] font-mono opacity-80">
+                      {usFoundCount}/{MEXICO_UNLOCK_THRESHOLD}
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-slate-200/80 overflow-hidden my-1">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        mexicoUnlocked ? 'bg-emerald-500' : 'bg-slate-400'
+                      }`}
+                      style={{
+                        width: `${Math.min(100, Math.round((usFoundCount / MEXICO_UNLOCK_THRESHOLD) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 truncate">
+                    {mexicoUnlocked
+                      ? settings.language === 'he'
+                        ? '🎉 פתוח! (לוחית 1 דרושה)'
+                        : '🎉 Unlocked! (1 Plate Needed)'
+                      : settings.language === 'he'
+                      ? `עוד ${Math.max(0, MEXICO_UNLOCK_THRESHOLD - usFoundCount)} מדינות לפתיחה`
+                      : `${Math.max(0, MEXICO_UNLOCK_THRESHOLD - usFoundCount)} states to unlock`}
+                  </span>
                 </div>
               </div>
 
@@ -885,45 +966,13 @@ export default function App() {
           </div>
         </div>
       )}
-      {bonusUnlockToast && (
-        <div
-          className="fixed top-4 inset-x-4 z-50 max-w-sm mx-auto bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white p-4 rounded-3xl shadow-2xl border-2 border-amber-300 animate-bounce flex items-center justify-between gap-3"
-          dir={settings.language === 'he' ? 'rtl' : 'ltr'}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-2xl shadow-inner shrink-0">
-              {bonusUnlockToast.type === 'canada' ? '🇨🇦' : '🇲🇽'}
-            </div>
-            <div>
-              <h4 className="font-extrabold text-sm text-white">
-                {bonusUnlockToast.type === 'canada'
-                  ? settings.language === 'he'
-                    ? '🎉 נפתחו פרובינציות קנדה!'
-                    : '🎉 Canada Provinces Unlocked!'
-                  : settings.language === 'he'
-                  ? '🎉 נפתחה לוחית מקסיקו!'
-                  : '🎉 Mexico License Plate Unlocked!'}
-              </h4>
-              <p className="text-xs text-amber-100 font-medium">
-                {bonusUnlockToast.type === 'canada'
-                  ? settings.language === 'he'
-                    ? 'הגעתם ל-20 מדינות בארה״ב! כעת ניתן לחפש פרובינציות מקנדה.'
-                    : 'Spotted 20 US states! You can now log Canadian border provinces.'
-                  : settings.language === 'he'
-                  ? 'הגעתם ל-40 מדינות בארה״ב! כעת ניתן לחפש לוחית ממקסיקו.'
-                  : 'Spotted 40 US states! You can now log Mexico license plate.'}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setBonusUnlockToast(null)}
-            className="p-1 text-amber-100 hover:text-white rounded-full font-bold cursor-pointer"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      {/* Full-Screen Darkened Bonus Celebration Modal */}
+      <BonusUnlockModal
+        type={bonusUnlockToast?.type || null}
+        isOpen={Boolean(bonusUnlockToast)}
+        onClose={() => setBonusUnlockToast(null)}
+        language={settings.language}
+      />
 
       {/* PWA Home Screen Banner */}
       <InstallPwaBanner language={settings.language} />

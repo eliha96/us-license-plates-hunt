@@ -201,10 +201,14 @@ export const ALL_BONUS_DATA: Record<string, StateInfo> = {
   ...MEXICO_DATA,
 };
 
+// Debug thresholds: Canada = 3 states, Mexico = 5 states
+export const CANADA_UNLOCK_THRESHOLD = 3;
+export const MEXICO_UNLOCK_THRESHOLD = 5;
+
 export function isCanadaUnlocked(usSpottedCount: number): boolean {
-  return usSpottedCount >= 20;
+  return usSpottedCount >= CANADA_UNLOCK_THRESHOLD;
 }
 
 export function isMexicoUnlocked(usSpottedCount: number): boolean {
-  return usSpottedCount >= 40;
+  return usSpottedCount >= MEXICO_UNLOCK_THRESHOLD;
 }

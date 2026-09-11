@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { StateInfo, SpottedRecord } from '../types';
 import { STATES_DATA } from '../data/statesData';
-import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import {
+  CANADA_PROVINCES_DATA,
+  MEXICO_DATA,
+  isCanadaUnlocked,
+  isMexicoUnlocked,
+} from '../data/bonusData';
+import { ZoomIn, ZoomOut, RotateCcw, Lock } from 'lucide-react';
 
 const REGION_COLORS: Record<string, string> = {
   West: '#f59e0b', // warm gold/amber
@@ -36,8 +42,15 @@ export const MapView: React.FC<MapViewProps> = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
+  const bonusLayerGroupRef = useRef<L.LayerGroup | null>(null);
+
   const [geoData, setGeoData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [mapRegion, setMapRegion] = useState<'us' | 'canada' | 'mexico'>('us');
+
+  const usFoundCount = Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length;
+  const canadaUnlocked = isCanadaUnlocked(usFoundCount);
+  const mexicoUnlocked = isMexicoUnlocked(usFoundCount);
 
   // Map state name lowercase -> StateInfo
   const stateByName = useRef<Record<string, StateInfo>>({});
@@ -102,15 +115,14 @@ export const MapView: React.FC<MapViewProps> = ({
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    // Detect small screen to set responsive default zoom
     const isSmall = window.innerWidth < 640;
     const initialZoom = isStatic ? 3.6 : isSmall ? 3.4 : 4;
 
     const map = L.map(mapContainerRef.current, {
       center: [37.8, -96.9],
       zoom: initialZoom,
-      minZoom: 2.8,
-      maxZoom: 7,
+      minZoom: 2.5,
+      maxZoom: 8,
       zoomControl: false,
       attributionControl: false,
       scrollWheelZoom: false,
@@ -119,7 +131,6 @@ export const MapView: React.FC<MapViewProps> = ({
       doubleClickZoom: false,
     });
 
-    // Clean light gray basemap with crossOrigin enabled for image capture
     L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
       {
@@ -129,6 +140,7 @@ export const MapView: React.FC<MapViewProps> = ({
       }
     ).addTo(map);
 
+    bonusLayerGroupRef.current = L.layerGroup().addTo(map);
     mapInstanceRef.current = map;
 
     return () => {
@@ -137,101 +149,182 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, [isStatic]);
 
-  // Update GeoJSON layer when geoData or spottedRecords change
+  // Update Map Center / View based on mapRegion tab selection
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !geoData) return;
+    if (!map) return;
 
-    if (geoJsonLayerRef.current) {
-      map.removeLayer(geoJsonLayerRef.current);
-      geoJsonLayerRef.current = null;
+    const isSmall = window.innerWidth < 640;
+
+    if (mapRegion === 'us') {
+      map.flyTo([37.8, -96.9], isStatic ? 3.6 : isSmall ? 3.4 : 4, { duration: 0.8 });
+    } else if (mapRegion === 'canada') {
+      map.flyTo([55.0, -96.0], isSmall ? 3.2 : 3.8, { duration: 0.8 });
+    } else if (mapRegion === 'mexico') {
+      map.flyTo([23.6, -102.5], isSmall ? 4.2 : 4.8, { duration: 0.8 });
     }
+  }, [mapRegion, isStatic]);
 
-    const foundSet = new Set(Object.keys(spottedRecords));
+  // Update GeoJSON & Bonus Markers when spottedRecords or mapRegion changes
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
 
-    // Style function:
-    // unfound: #cbd5e1 with opacity 0.52
-    // found: regional color (West: amber, Midwest: emerald, South: red, Northeast: indigo)
-    const getFeatureStyle = (feature: any) => {
-      const stateName = feature.properties?.name?.toLowerCase();
-      const state = stateByName.current[stateName];
-      const isFound = state ? foundSet.has(state.id) : false;
-      const isSelected = state ? selectedStateId === state.id : false;
-
-      if (isFound) {
-        const regionColor = (state && REGION_COLORS[state.region]) || '#6366f1';
-        return {
-          fillColor: regionColor,
-          weight: isSelected ? 2.8 : 1.2,
-          color: isSelected ? '#0f172a' : '#ffffff',
-          fillOpacity: 0.92,
-        };
+    // 1. Update GeoJSON layer for US states
+    if (geoData) {
+      if (geoJsonLayerRef.current) {
+        map.removeLayer(geoJsonLayerRef.current);
+        geoJsonLayerRef.current = null;
       }
 
-      if (isSelected) {
+      const foundSet = new Set(Object.keys(spottedRecords));
+
+      const getFeatureStyle = (feature: any) => {
+        const stateName = feature.properties?.name?.toLowerCase();
+        const state = stateByName.current[stateName];
+        const isFound = state ? foundSet.has(state.id) : false;
+        const isSelected = state ? selectedStateId === state.id : false;
+
+        if (isFound) {
+          const regionColor = (state && REGION_COLORS[state.region]) || '#6366f1';
+          return {
+            fillColor: regionColor,
+            weight: isSelected ? 2.8 : 1.2,
+            color: isSelected ? '#0f172a' : '#ffffff',
+            fillOpacity: 0.92,
+          };
+        }
+
+        if (isSelected) {
+          return {
+            fillColor: '#cbd5e1',
+            weight: 2.2,
+            color: '#4f46e5',
+            fillOpacity: 0.8,
+          };
+        }
+
         return {
           fillColor: '#cbd5e1',
-          weight: 2.2,
-          color: '#4f46e5',
-          fillOpacity: 0.8,
+          weight: 0.7,
+          color: '#ffffff',
+          fillOpacity: mapRegion === 'us' ? 0.55 : 0.25,
         };
+      };
+
+      const onEachFeature = (feature: any, layer: L.Layer) => {
+        const stateName = feature.properties?.name || '';
+        const state = stateByName.current[stateName.toLowerCase()];
+        const isFound = state ? foundSet.has(state.id) : false;
+
+        const titleText = state
+          ? `${state.name} (${state.nameHe})${isFound ? ' ✓' : ''}`
+          : `${stateName}${isFound ? ' ✓' : ''}`;
+
+        layer.bindTooltip(titleText, {
+          sticky: true,
+          direction: 'auto',
+          className: 'custom-state-leaflet-tooltip',
+        });
+
+        layer.on({
+          mouseover: (e: L.LeafletMouseEvent) => {
+            const l = e.target;
+            l.setStyle({
+              weight: 2,
+              color: '#0f172a',
+              fillOpacity: 0.96,
+            });
+          },
+          mouseout: (e: L.LeafletMouseEvent) => {
+            if (geoJsonLayerRef.current) {
+              geoJsonLayerRef.current.resetStyle(e.target);
+            }
+          },
+          click: () => {
+            if (state && onSelectState) {
+              onSelectState(state);
+            }
+          },
+        });
+      };
+
+      const layer = L.geoJSON(geoData, {
+        style: getFeatureStyle,
+        onEachFeature: onEachFeature,
+      }).addTo(map);
+
+      geoJsonLayerRef.current = layer;
+    }
+
+    // 2. Render Interactive Markers for Canada & Mexico
+    if (bonusLayerGroupRef.current) {
+      bonusLayerGroupRef.current.clearLayers();
+
+      const foundSet = new Set(Object.keys(spottedRecords));
+      const targetBonusStates: StateInfo[] = [];
+
+      if (mapRegion === 'canada' && canadaUnlocked) {
+        targetBonusStates.push(...Object.values(CANADA_PROVINCES_DATA));
+      } else if (mapRegion === 'mexico' && mexicoUnlocked) {
+        targetBonusStates.push(...Object.values(MEXICO_DATA));
+      } else if (mapRegion === 'us') {
+        // Add subtle bonus indicators on US view if unlocked
+        if (canadaUnlocked) targetBonusStates.push(...Object.values(CANADA_PROVINCES_DATA));
+        if (mexicoUnlocked) targetBonusStates.push(...Object.values(MEXICO_DATA));
       }
 
-      return {
-        fillColor: '#cbd5e1',
-        weight: 0.7,
-        color: '#ffffff',
-        fillOpacity: 0.55,
-      };
-    };
+      targetBonusStates.forEach((st) => {
+        const isFound = foundSet.has(st.id);
+        const bgColor = isFound
+          ? st.country === 'Canada'
+            ? '#d97706'
+            : '#059669'
+          : '#64748b';
 
-    const onEachFeature = (feature: any, layer: L.Layer) => {
-      const stateName = feature.properties?.name || '';
-      const state = stateByName.current[stateName.toLowerCase()];
-      const isFound = state ? foundSet.has(state.id) : false;
+        const customHtml = `
+          <div style="
+            background-color: ${bgColor};
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 9999px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transform: translate(-50%, -50%);
+          ">
+            <span>${st.country === 'Canada' ? '🇨🇦' : '🇲🇽'} ${st.id}</span>
+            ${isFound ? '<span style="font-weight:900;">✓</span>' : ''}
+          </div>
+        `;
 
-      const titleText = state
-        ? `${state.name} (${state.nameHe})${isFound ? ' ✓' : ''}`
-        : `${stateName}${isFound ? ' ✓' : ''}`;
+        const icon = L.divIcon({
+          html: customHtml,
+          className: 'custom-bonus-map-marker',
+          iconSize: [0, 0],
+        });
 
-      layer.bindTooltip(titleText, {
-        sticky: true,
-        direction: 'auto',
-        className: 'custom-state-leaflet-tooltip',
+        const marker = L.marker([st.lat, st.lng], { icon });
+
+        marker.bindTooltip(`${st.name} (${st.nameHe})${isFound ? ' ✓' : ''}`, {
+          direction: 'top',
+          offset: [0, -10],
+        });
+
+        marker.on('click', () => {
+          if (onSelectState) onSelectState(st);
+        });
+
+        bonusLayerGroupRef.current?.addLayer(marker);
       });
-
-      layer.on({
-        mouseover: (e: L.LeafletMouseEvent) => {
-          const l = e.target;
-          l.setStyle({
-            weight: 2,
-            color: '#0f172a',
-            fillOpacity: 0.96,
-          });
-          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            l.bringToFront();
-          }
-        },
-        mouseout: (e: L.LeafletMouseEvent) => {
-          if (geoJsonLayerRef.current) {
-            geoJsonLayerRef.current.resetStyle(e.target);
-          }
-        },
-        click: () => {
-          if (state && onSelectState) {
-            onSelectState(state);
-          }
-        },
-      });
-    };
-
-    const layer = L.geoJSON(geoData, {
-      style: getFeatureStyle,
-      onEachFeature: onEachFeature,
-    }).addTo(map);
-
-    geoJsonLayerRef.current = layer;
-  }, [geoData, spottedRecords, selectedStateId, onSelectState]);
+    }
+  }, [geoData, spottedRecords, selectedStateId, onSelectState, mapRegion, canadaUnlocked, mexicoUnlocked]);
 
   // Zoom control handlers
   const handleZoomIn = () => {
@@ -243,37 +336,106 @@ export const MapView: React.FC<MapViewProps> = ({
   };
 
   const handleReset = () => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
     const isSmall = window.innerWidth < 640;
-    mapInstanceRef.current?.setView([37.8, -96.9], isStatic ? 3.6 : isSmall ? 3.4 : 4);
+
+    if (mapRegion === 'us') {
+      map.setView([37.8, -96.9], isStatic ? 3.6 : isSmall ? 3.4 : 4);
+    } else if (mapRegion === 'canada') {
+      map.setView([55.0, -96.0], isSmall ? 3.2 : 3.8);
+    } else if (mapRegion === 'mexico') {
+      map.setView([23.6, -102.5], isSmall ? 4.2 : 4.8);
+    }
   };
 
   return (
     <div className="space-y-2">
-      {/* Modern Region Color Pills Header */}
+      {/* Map Country & Region Selector Tabs */}
       {!isStatic && (
-        <div className="flex items-center justify-between gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
-          {REGIONS_INFO.map((reg) => {
-            const countInReg = Object.values(STATES_DATA).filter(
-              (s) => s.region === reg.id && spottedRecords[s.id]
-            ).length;
-            const totalInReg = Object.values(STATES_DATA).filter((s) => s.region === reg.id).length;
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+            <button
+              type="button"
+              onClick={() => setMapRegion('us')}
+              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
+                mapRegion === 'us'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <span>🇺🇸</span>
+              <span>{language === 'he' ? 'מפת ארה״ב' : 'US Map'}</span>
+            </button>
 
-            return (
-              <div
-                key={reg.id}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 border border-slate-200/80 shadow-2xs text-[11px] font-bold text-slate-700 shrink-0"
+            {canadaUnlocked ? (
+              <button
+                type="button"
+                onClick={() => setMapRegion('canada')}
+                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
+                  mapRegion === 'canada'
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : 'bg-white text-amber-900 border border-amber-200 hover:bg-amber-50'
+                }`}
               >
-                <span
-                  className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
-                  style={{ backgroundColor: reg.color }}
-                />
-                <span>{language === 'he' ? reg.nameHe : reg.nameEn}</span>
-                <span className="text-[10px] text-slate-400 font-semibold">
-                  {countInReg}/{totalInReg}
-                </span>
+                <span>🇨🇦</span>
+                <span>{language === 'he' ? 'מפת קנדה (בונוס 1)' : 'Canada Map (Bonus 1)'}</span>
+              </button>
+            ) : (
+              <div className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1 shrink-0 opacity-70">
+                <Lock className="w-3 h-3 text-slate-400" />
+                <span>🇨🇦 {language === 'he' ? 'קנדה (נעול)' : 'Canada (Locked)'}</span>
               </div>
-            );
-          })}
+            )}
+
+            {mexicoUnlocked ? (
+              <button
+                type="button"
+                onClick={() => setMapRegion('mexico')}
+                className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-1 shrink-0 ${
+                  mapRegion === 'mexico'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-white text-emerald-900 border border-emerald-200 hover:bg-emerald-50'
+                }`}
+              >
+                <span>🇲🇽</span>
+                <span>{language === 'he' ? 'מפת מקסיקו (בונוס 2)' : 'Mexico Map (Bonus 2)'}</span>
+              </button>
+            ) : (
+              <div className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1 shrink-0 opacity-70">
+                <Lock className="w-3 h-3 text-slate-400" />
+                <span>🇲🇽 {language === 'he' ? 'מקסיקו (נעול)' : 'Mexico (Locked)'}</span>
+              </div>
+            )}
+          </div>
+
+          {/* US Region Color Pills (Only shown when US map active) */}
+          {mapRegion === 'us' && (
+            <div className="flex items-center justify-between gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+              {REGIONS_INFO.map((reg) => {
+                const countInReg = Object.values(STATES_DATA).filter(
+                  (s) => s.region === reg.id && spottedRecords[s.id]
+                ).length;
+                const totalInReg = Object.values(STATES_DATA).filter((s) => s.region === reg.id).length;
+
+                return (
+                  <div
+                    key={reg.id}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 border border-slate-200/80 shadow-2xs text-[11px] font-bold text-slate-700 shrink-0"
+                  >
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
+                      style={{ backgroundColor: reg.color }}
+                    />
+                    <span>{language === 'he' ? reg.nameHe : reg.nameEn}</span>
+                    <span className="text-[10px] text-slate-400 font-semibold">
+                      {countInReg}/{totalInReg}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -340,3 +502,4 @@ export const MapView: React.FC<MapViewProps> = ({
     </div>
   );
 };
+
