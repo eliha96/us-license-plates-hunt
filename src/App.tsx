@@ -18,7 +18,8 @@ import { AchievementsView } from './components/AchievementsView';
 import { AddPlateModal } from './components/AddPlateModal';
 import { StateDetailsModal } from './components/StateDetailsModal';
 import { AchievementToast } from './components/AchievementToast';
-import { ShareModal } from './components/ShareModal';
+import { ALL_BONUS_DATA, isCanadaUnlocked, isMexicoUnlocked } from './data/bonusData';
+import { InstallPwaBanner } from './components/InstallPwaBanner';
 
 import {
   Car,
@@ -102,6 +103,11 @@ function CircularProgressRing({
   );
 }
 
+const ALL_COMBINED_STATES: Record<string, StateInfo> = {
+  ...STATES_DATA,
+  ...ALL_BONUS_DATA,
+};
+
 export default function App() {
   const [spottedRecords, setSpottedRecords] = useState<Record<string, SpottedRecord>>(() =>
     loadSpottedFromStorage()
@@ -117,6 +123,12 @@ export default function App() {
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
   const [shareTargetState, setShareTargetState] = useState<StateInfo | null>(null);
+
+  // Bonus milestone unlocks toast state
+  const [bonusUnlockToast, setBonusUnlockToast] = useState<{ type: 'canada' | 'mexico' } | null>(null);
+  const prevUsCountRef = useRef<number>(
+    Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length
+  );
 
   // First-time onboarding language prompt
   const [showLangOnboarding, setShowLangOnboarding] = useState<boolean>(() => {
@@ -229,14 +241,38 @@ export default function App() {
       // Confetti fallback
     }
 
+    // Check bonus milestone unlocks
+    checkForBonusUnlocks(updated);
+
     // Immediately display the Discovery Card (Plate, Slogan, Details, Facts)
-    const targetState = STATES_DATA[record.stateId];
+    const targetState = ALL_COMBINED_STATES[record.stateId];
     if (targetState) {
       setSelectedState(targetState);
       setIsDetailsModalOpen(true);
     }
 
     checkForNewAchievements(updated);
+  };
+
+  const checkForBonusUnlocks = (updatedRecords: Record<string, SpottedRecord>) => {
+    const prevUs = prevUsCountRef.current;
+    const currentUs = Object.keys(updatedRecords).filter((id) => STATES_DATA[id]).length;
+
+    if (prevUs < 20 && currentUs >= 20) {
+      setBonusUnlockToast({ type: 'canada' });
+      sounds.playVictorySound();
+      try {
+        confetti({ particleCount: 110, spread: 85, origin: { y: 0.55 } });
+      } catch {}
+    } else if (prevUs < 40 && currentUs >= 40) {
+      setBonusUnlockToast({ type: 'mexico' });
+      sounds.playVictorySound();
+      try {
+        confetti({ particleCount: 130, spread: 95, origin: { y: 0.55 } });
+      } catch {}
+    }
+
+    prevUsCountRef.current = currentUs;
   };
 
   const handleDeleteRecord = (stateId: string) => {
@@ -722,6 +758,7 @@ export default function App() {
       <AddPlateModal
         initialState={selectedState}
         existingRecord={selectedRecordForEdit}
+        spottedRecords={spottedRecords}
         isOpen={isAddModalOpen}
         onClose={() => {
           setIsAddModalOpen(false);
@@ -847,6 +884,48 @@ export default function App() {
           </div>
         </div>
       )}
+      {bonusUnlockToast && (
+        <div
+          className="fixed top-4 inset-x-4 z-50 max-w-sm mx-auto bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white p-4 rounded-3xl shadow-2xl border-2 border-amber-300 animate-bounce flex items-center justify-between gap-3"
+          dir={settings.language === 'he' ? 'rtl' : 'ltr'}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-2xl shadow-inner shrink-0">
+              {bonusUnlockToast.type === 'canada' ? '🇨🇦' : '🇲🇽'}
+            </div>
+            <div>
+              <h4 className="font-extrabold text-sm text-white">
+                {bonusUnlockToast.type === 'canada'
+                  ? settings.language === 'he'
+                    ? '🎉 נפתחו פרובינציות קנדה!'
+                    : '🎉 Canada Provinces Unlocked!'
+                  : settings.language === 'he'
+                  ? '🎉 נפתחה לוחית מקסיקו!'
+                  : '🎉 Mexico License Plate Unlocked!'}
+              </h4>
+              <p className="text-xs text-amber-100 font-medium">
+                {bonusUnlockToast.type === 'canada'
+                  ? settings.language === 'he'
+                    ? 'הגעתם ל-20 מדינות בארה״ב! כעת ניתן לחפש פרובינציות מקנדה.'
+                    : 'Spotted 20 US states! You can now log Canadian border provinces.'
+                  : settings.language === 'he'
+                  ? 'הגעתם ל-40 מדינות בארה״ב! כעת ניתן לחפש לוחית ממקסיקו.'
+                  : 'Spotted 40 US states! You can now log Mexico license plate.'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setBonusUnlockToast(null)}
+            className="p-1 text-amber-100 hover:text-white rounded-full font-bold cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* PWA Home Screen Banner */}
+      <InstallPwaBanner language={settings.language} />
     </div>
   );
 }

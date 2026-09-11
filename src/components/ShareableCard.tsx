@@ -175,7 +175,13 @@ export const ShareableCard: React.FC<ShareableCardProps> = ({
                     </span>
                   </div>
                   <p className="text-xs font-semibold text-stone-500 mt-0.5">
-                    {targetState.name} · {language === 'he' ? currentRegion?.nameHe : currentRegion?.nameEn}
+                    {targetState.name} · {
+                      targetState.country === 'Canada'
+                        ? (language === 'he' ? '🇨🇦 קנדה (בונוס)' : '🇨🇦 Canada (Bonus)')
+                        : targetState.country === 'Mexico'
+                        ? (language === 'he' ? '🇲🇽 מקסיקו (בונוס)' : '🇲🇽 Mexico (Bonus)')
+                        : (language === 'he' ? currentRegion?.nameHe : currentRegion?.nameEn)
+                    }
                   </p>
                 </div>
 

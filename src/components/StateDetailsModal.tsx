@@ -107,7 +107,19 @@ export const StateDetailsModal: React.FC<StateDetailsModalProps> = ({
               >
                 <span>{state.name}</span>
                 <span>·</span>
-                <span>{language === 'he' ? currentRegion?.nameHe : currentRegion?.nameEn}</span>
+                <span>
+                  {state.country === 'Canada'
+                    ? language === 'he'
+                      ? '🇨🇦 קנדה (בונוס)'
+                      : '🇨🇦 Canada (Bonus)'
+                    : state.country === 'Mexico'
+                    ? language === 'he'
+                      ? '🇲🇽 מקסיקו (בונוס)'
+                      : '🇲🇽 Mexico (Bonus)'
+                    : language === 'he'
+                    ? currentRegion?.nameHe
+                    : currentRegion?.nameEn}
+                </span>
               </p>
             </div>
 
@@ -261,10 +273,20 @@ export const StateDetailsModal: React.FC<StateDetailsModalProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-slate-400 font-semibold">
-                {language === 'he' ? 'אזור' : 'Region'}:
+                {language === 'he' ? 'אזור / מדינה' : 'Region / Country'}:
               </span>
               <span className="font-bold text-slate-700">
-                {language === 'he' ? currentRegion?.nameHe : currentRegion?.nameEn}
+                {state.country === 'Canada'
+                  ? language === 'he'
+                    ? '🇨🇦 קנדה (בונוס)'
+                    : '🇨🇦 Canada (Bonus)'
+                  : state.country === 'Mexico'
+                  ? language === 'he'
+                    ? '🇲🇽 מקסיקו (בונוס)'
+                    : '🇲🇽 Mexico (Bonus)'
+                  : language === 'he'
+                  ? currentRegion?.nameHe
+                  : currentRegion?.nameEn}
               </span>
             </div>
             {(state.triviaHe || state.triviaEn) && (

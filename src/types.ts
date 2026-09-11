@@ -25,6 +25,8 @@ export interface StateInfo {
   samplePlateNumber?: string;
   triviaHe: string;
   triviaEn?: string;
+  country?: 'US' | 'Canada' | 'Mexico';
+  isBonus?: boolean;
 }
 
 export interface SpottedRecord {

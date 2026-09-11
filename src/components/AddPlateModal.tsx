@@ -3,6 +3,13 @@ import { StateInfo, SpottedRecord } from '../types';
 import { STATES_DATA } from '../data/statesData';
 import { US_REGIONS } from '../data/regionsData';
 import {
+  CANADA_PROVINCES_DATA,
+  MEXICO_DATA,
+  ALL_BONUS_DATA,
+  isCanadaUnlocked,
+  isMexicoUnlocked,
+} from '../data/bonusData';
+import {
   X,
   Camera,
   MapPin,
@@ -19,6 +26,7 @@ import {
 interface AddPlateModalProps {
   initialState: StateInfo | null;
   existingRecord?: SpottedRecord | null;
+  spottedRecords?: Record<string, SpottedRecord>;
   isOpen: boolean;
   onClose: () => void;
   onSave: (record: SpottedRecord) => void;
@@ -26,9 +34,15 @@ interface AddPlateModalProps {
   language?: 'he' | 'en';
 }
 
+const ALL_COMBINED: Record<string, StateInfo> = {
+  ...STATES_DATA,
+  ...ALL_BONUS_DATA,
+};
+
 export const AddPlateModal: React.FC<AddPlateModalProps> = ({
   initialState,
   existingRecord,
+  spottedRecords = {},
   isOpen,
   onClose,
   onSave,
@@ -45,6 +59,10 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
   const [isGettingLocation, setIsGettingLocation] = useState<boolean>(false);
   const [locationError, setLocationError] = useState<string>('');
   const [stateSearch, setStateSearch] = useState<string>('');
+
+  const usFoundCount = Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length;
+  const canadaUnlocked = isCanadaUnlocked(usFoundCount);
+  const mexicoUnlocked = isMexicoUnlocked(usFoundCount);
 
   useEffect(() => {
     if (initialState) {
@@ -79,7 +97,7 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
 
   if (!isOpen) return null;
 
-  const currentState = STATES_DATA[selectedStateId] || initialState || STATES_DATA['CA'];
+  const currentState = ALL_COMBINED[selectedStateId] || initialState || STATES_DATA['CA'];
   const currentRegion = US_REGIONS[currentState.region];
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,16 +167,6 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
     onSave(record);
   };
 
-  const filteredStatesList = Object.values(STATES_DATA).filter((s) => {
-    if (!stateSearch.trim()) return true;
-    const q = stateSearch.toLowerCase().trim();
-    return (
-      s.name.toLowerCase().includes(q) ||
-      s.nameHe.toLowerCase().includes(q) ||
-      s.id.toLowerCase().includes(q)
-    );
-  });
-
   return (
     <div
       id="add-plate-modal-backdrop"
@@ -211,7 +219,7 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
               htmlFor="state-select"
               className="block text-xs font-bold text-slate-700 mb-1"
             >
-              {language === 'he' ? 'בחירת מדינה (State)' : 'Select State'}
+              {language === 'he' ? 'בחירת מדינה / טריטוריה' : 'Select State or Region'}
             </label>
             <select
               id="state-select"
@@ -219,11 +227,33 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
               onChange={(e) => setSelectedStateId(e.target.value)}
               className="w-full px-3.5 py-3 text-base sm:text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800"
             >
-              {Object.values(STATES_DATA).map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.id} - {language === 'he' ? `${s.nameHe} (${s.name})` : `${s.name} (${s.nameHe})`}
-                </option>
-              ))}
+              <optgroup label={language === 'he' ? '🇺🇸 ארצות הברית (50 מדינות)' : '🇺🇸 United States (50 States)'}>
+                {Object.values(STATES_DATA).map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.id} - {language === 'he' ? `${s.nameHe} (${s.name})` : `${s.name} (${s.nameHe})`}
+                  </option>
+                ))}
+              </optgroup>
+
+              {canadaUnlocked && (
+                <optgroup label={language === 'he' ? '🇨🇦 קנדה - פרובינציות גבול (בונוס)' : '🇨🇦 Canada - Border Provinces (Bonus)'}>
+                  {Object.values(CANADA_PROVINCES_DATA).map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.id} - {language === 'he' ? `${s.nameHe} (${s.name})` : `${s.name} (${s.nameHe})`}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+
+              {mexicoUnlocked && (
+                <optgroup label={language === 'he' ? '🇲🇽 מקסיקו (בונוס)' : '🇲🇽 Mexico (Bonus)'}>
+                  {Object.values(MEXICO_DATA).map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.id} - {language === 'he' ? `${s.nameHe} (${s.name})` : `${s.name} (${s.nameHe})`}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
             </select>
           </div>
 

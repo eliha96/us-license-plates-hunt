@@ -1,8 +1,14 @@
 import React from 'react';
 import { SpottedRecord, StateInfo } from '../types';
 import { STATES_DATA } from '../data/statesData';
+import { ALL_BONUS_DATA } from '../data/bonusData';
 import { SightingsMapView } from './SightingsMapView';
 import { MapPin, Calendar, Camera, Edit3, Trash2 } from 'lucide-react';
+
+const ALL_COMBINED_STATES: Record<string, StateInfo> = {
+  ...STATES_DATA,
+  ...ALL_BONUS_DATA,
+};
 
 interface SightingsPageViewProps {
   spottedRecords: Record<string, SpottedRecord>;
@@ -92,7 +98,7 @@ export const SightingsPageView: React.FC<SightingsPageViewProps> = ({
 
             <div className="space-y-2">
               {records.map((rec) => {
-                const st = STATES_DATA[rec.stateId];
+                const st = ALL_COMBINED_STATES[rec.stateId] || STATES_DATA[rec.stateId];
                 return (
                   <div
                     key={rec.stateId}
