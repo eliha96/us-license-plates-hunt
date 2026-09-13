@@ -42,6 +42,7 @@ import {
   Languages,
   RotateCcw,
   Share2,
+  Download,
 } from 'lucide-react';
 
 const REGION_COLORS: Record<string, string> = {
@@ -139,6 +140,14 @@ export default function App() {
   const prevUsCountRef = useRef<number>(
     Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length
   );
+
+  const [isStandalone, setIsStandalone] = useState<boolean>(false);
+  useEffect(() => {
+    const inStandaloneMode =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+    setIsStandalone(inStandaloneMode);
+  }, []);
 
   // First-time onboarding language prompt
   const [showLangOnboarding, setShowLangOnboarding] = useState<boolean>(() => {
@@ -352,6 +361,9 @@ export default function App() {
     >
       {/* Centered Mobile App Container */}
       <div className="w-full max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col pb-24 border-x border-slate-100 relative">
+        {/* PWA Top Install Banner */}
+        <InstallPwaBanner language={settings.language} />
+
         {/* App Header */}
         <header className="p-4 sm:p-5 pb-2 flex items-center justify-between border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30">
           <div>
@@ -366,6 +378,23 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-1">
+            {/* Header Install Button (if not standalone) */}
+            {!isStandalone && (
+              <button
+                type="button"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('open-pwa-install-modal'));
+                }}
+                title={settings.language === 'he' ? 'התקן את האפליקציה למסך הבית' : 'Install App to Home Screen'}
+                className="p-2 text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-amber-600" />
+                <span className="hidden sm:inline text-xs font-extrabold text-amber-900">
+                  {settings.language === 'he' ? 'התקן' : 'Install'}
+                </span>
+              </button>
+            )}
+
             {/* Share Progress Button */}
             <button
               type="button"
@@ -1002,9 +1031,6 @@ export default function App() {
         onClose={() => setBonusUnlockToast(null)}
         language={settings.language}
       />
-
-      {/* PWA Home Screen Banner */}
-      <InstallPwaBanner language={settings.language} />
     </div>
   );
 }

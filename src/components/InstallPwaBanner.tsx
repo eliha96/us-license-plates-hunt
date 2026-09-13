@@ -9,42 +9,41 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isIOS, setIsIOS] = useState<boolean>(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState<boolean>(false);
-  const [isDismissed, setIsDismissed] = useState<boolean>(true);
+  const [isDismissed, setIsDismissed] = useState<boolean>(false);
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
 
   useEffect(() => {
-    // Check if already running as installed standalone PWA
+    // Check if running as installed standalone PWA
     const inStandaloneMode =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
 
     setIsStandalone(inStandaloneMode);
 
-    // Check if user previously dismissed the banner
-    const dismissed = localStorage.getItem('plate_hunt_install_banner_dismissed_v1');
-    if (dismissed || inStandaloneMode) {
-      return;
-    }
-
     // Detect iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isIosDevice);
 
-    // Show banner on mobile/browser if not standalone
-    setIsDismissed(false);
-
     // Capture Chrome / Android / Desktop PWA install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setIsDismissed(false);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
+    // Listen to header button trigger
+    const handleOpenInstall = () => {
+      setIsDismissed(false);
+      handleInstallClick();
+    };
+
+    window.addEventListener('open-pwa-install-modal', handleOpenInstall);
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('open-pwa-install-modal', handleOpenInstall);
     };
   }, []);
 
@@ -59,7 +58,7 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
     } else if (isIOS) {
       setShowIOSInstructions(true);
     } else {
-      // Fallback
+      // Fallback instructions
       alert(
         language === 'he'
           ? 'כדי להוסיף למסך הבית: לחץ על תפריט הדפדפן (3 נקודות) ובחר "הוסף למסך הבית"'
@@ -70,55 +69,57 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
 
   const handleDismiss = () => {
     setIsDismissed(true);
-    localStorage.setItem('plate_hunt_install_banner_dismissed_v1', 'true');
   };
 
-  if (isStandalone || isDismissed) return null;
+  if (isStandalone) return null;
 
   return (
     <>
-      <div
-        id="pwa-install-banner"
-        className="fixed bottom-20 inset-x-3 z-40 max-w-md mx-auto animate-fade-in"
-        dir={language === 'he' ? 'rtl' : 'ltr'}
-      >
-        <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 sm:p-3.5 shadow-2xl text-white flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xl shadow-md shrink-0">
-              📲
+      {/* Top of Page Install Banner */}
+      {!isDismissed && (
+        <div
+          id="pwa-install-banner-top"
+          className="sticky top-0 z-40 w-full animate-fade-in"
+          dir={language === 'he' ? 'rtl' : 'ltr'}
+        >
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-amber-950 border-b border-amber-500/30 p-2.5 sm:p-3 shadow-md text-white flex items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-base shadow-xs shrink-0">
+                📲
+              </div>
+              <div className="min-w-0">
+                <h4 className="font-extrabold text-xs text-white truncate">
+                  {language === 'he' ? 'הוסף את האפליקציה למסך הבית' : 'Add App to Home Screen'}
+                </h4>
+                <p className="text-[10px] text-amber-200/90 truncate">
+                  {language === 'he'
+                    ? 'לגישה מהירה בדרכים בלחיצה אחת'
+                    : 'Quick 1-tap access on your phone'}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h4 className="font-extrabold text-xs sm:text-sm text-white truncate">
-                {language === 'he' ? 'הוסף את האפליקציה למסך הבית' : 'Add App to Home Screen'}
-              </h4>
-              <p className="text-[11px] text-slate-300 truncate">
-                {language === 'he'
-                  ? 'לגישה מהירה בדרכים ללא סרגל דפדפן!'
-                  : 'Quick road trip access right from your phone!'}
-              </p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={handleInstallClick}
-              className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black text-xs transition-all shadow-xs flex items-center gap-1 cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>{language === 'he' ? 'התקן' : 'Install'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleDismiss}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-              title="Dismiss"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={handleInstallClick}
+                className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black text-xs transition-all shadow-xs flex items-center gap-1 cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>{language === 'he' ? 'התקן' : 'Install'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleDismiss}
+                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/60 transition-colors"
+                title="Dismiss"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* iOS Safari Instructions Modal */}
       {showIOSInstructions && (
@@ -172,7 +173,7 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
             <button
               type="button"
               onClick={() => setShowIOSInstructions(false)}
-              className="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs"
+              className="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs cursor-pointer"
             >
               {language === 'he' ? 'הבנתי, תודה!' : 'Got it!'}
             </button>
@@ -182,3 +183,4 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
     </>
   );
 };
+
