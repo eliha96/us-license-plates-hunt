@@ -60,18 +60,15 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
   const [isGettingLocation, setIsGettingLocation] = useState<boolean>(false);
   const [locationError, setLocationError] = useState<string>('');
   const [stateSearch, setStateSearch] = useState<string>('');
+  const [isCompressing, setIsCompressing] = useState<boolean>(false);
 
   const usFoundCount = Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length;
   const canadaUnlocked = isCanadaUnlocked(usFoundCount);
   const mexicoUnlocked = isMexicoUnlocked(usFoundCount);
 
   useEffect(() => {
-    if (initialState) {
-      setSelectedStateId(initialState.id);
-    }
-  }, [initialState]);
+    if (!isOpen) return;
 
-  useEffect(() => {
     if (existingRecord) {
       setSelectedStateId(existingRecord.stateId);
       setLocation(existingRecord.location || '');
@@ -81,6 +78,9 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
       setLat(existingRecord.latitude);
       setLng(existingRecord.longitude);
     } else {
+      if (initialState) {
+        setSelectedStateId(initialState.id);
+      }
       const now = new Date();
       const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
         .toISOString()
@@ -94,14 +94,12 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
     }
     setLocationError('');
     setStateSearch('');
-  }, [existingRecord, isOpen]);
+  }, [existingRecord, initialState, isOpen]);
 
   if (!isOpen) return null;
 
   const currentState = ALL_COMBINED[selectedStateId] || initialState || STATES_DATA['CA'];
   const currentRegion = US_REGIONS[currentState.region];
-
-  const [isCompressing, setIsCompressing] = useState<boolean>(false);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

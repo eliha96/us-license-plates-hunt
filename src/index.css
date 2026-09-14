@@ -18,3 +18,34 @@
     scrollbar-width: none;
   }
 }
+
+/* Leaflet Tooltip Styles - Disable pointer events so state clicks pass through reliably */
+.custom-state-leaflet-tooltip,
+.custom-state-leaflet-tooltip-disabled {
+  pointer-events: none !important;
+  user-select: none !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 6px 12px !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
+}
+
+.custom-state-leaflet-tooltip {
+  background: rgba(15, 23, 42, 0.92) !important;
+  color: #ffffff !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.custom-state-leaflet-tooltip-disabled {
+  background: rgba(71, 85, 105, 0.85) !important;
+  color: #cbd5e1 !important;
+}
+
+.custom-state-leaflet-tooltip::before,
+.custom-state-leaflet-tooltip-disabled::before {
+  display: none !important;
+}

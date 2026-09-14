@@ -296,7 +296,8 @@ export const MapView: React.FC<MapViewProps> = ({
             geoJsonLayerRef.current.resetStyle(e.target);
           }
         },
-        click: () => {
+        click: (e: L.LeafletMouseEvent) => {
+          L.DomEvent.stopPropagation(e);
           if (state && onSelectState) {
             onSelectState(state);
           }
