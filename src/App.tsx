@@ -1010,8 +1010,8 @@ export default function App() {
             <div className="space-y-1.5">
               <h3 className="text-lg font-black text-slate-900 leading-snug">
                 {settings.language === 'he'
-                  ? 'אני עובדת הרבה יותר מוצלח אם מורידים אותי לדף הבית 😊'
-                  : 'I work much better if you download me to your Home Screen 😊'}
+                  ? 'אני הרבה יותר מוצלחת בתור אפליקצייה 😊'
+                  : 'I work much better as an installed app 😊'}
               </h3>
               <p className="text-xs text-slate-500 font-medium leading-relaxed">
                 {settings.language === 'he'
