@@ -43,8 +43,16 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
+    // Listen to header download button trigger
+    const handleOpenInstall = () => {
+      handleInstallClick();
+    };
+
+    window.addEventListener('open-pwa-install-modal', handleOpenInstall);
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('open-pwa-install-modal', handleOpenInstall);
     };
   }, []);
 

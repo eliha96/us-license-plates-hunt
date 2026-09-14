@@ -42,6 +42,7 @@ import {
   Languages,
   RotateCcw,
   Share2,
+  Download,
 } from 'lucide-react';
 
 const REGION_COLORS: Record<string, string> = {
@@ -139,6 +140,14 @@ export default function App() {
   const prevUsCountRef = useRef<number>(
     Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length
   );
+
+  const [isStandalone, setIsStandalone] = useState<boolean>(false);
+  useEffect(() => {
+    const inStandaloneMode =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+    setIsStandalone(inStandaloneMode);
+  }, []);
 
   // First-time onboarding language prompt
   const [showLangOnboarding, setShowLangOnboarding] = useState<boolean>(() => {
@@ -366,6 +375,23 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-1">
+            {/* Download App Button (shows as long as app is in browser mode and not installed) */}
+            {!isStandalone && (
+              <button
+                type="button"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('open-pwa-install-modal'));
+                }}
+                title={settings.language === 'he' ? 'הורד את האפליקציה למכשיר' : 'Download App to Device'}
+                className="p-2 text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-amber-600" />
+                <span className="hidden sm:inline text-xs font-extrabold text-amber-900">
+                  {settings.language === 'he' ? 'הורד' : 'Download'}
+                </span>
+              </button>
+            )}
+
             {/* Share Progress Button */}
             <button
               type="button"
