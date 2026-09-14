@@ -43,19 +43,29 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
       }
     };
 
-    // Header download button click listener - ALWAYS active!
+    // Header download button click listener
     const handleOpenInstall = () => {
       triggerInstall();
+    };
+
+    const handleAppInstalled = () => {
+      setIsStandalone(true);
+      setDeferredPrompt(null);
+      (window as any).deferredPwaPrompt = null;
+      setIsBannerDismissed(true);
+      localStorage.setItem('plate_hunt_install_banner_dismissed_v3', 'true');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('pwa-prompt-captured', handleCaptured);
     window.addEventListener('open-pwa-install-modal', handleOpenInstall);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('pwa-prompt-captured', handleCaptured);
       window.removeEventListener('open-pwa-install-modal', handleOpenInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
@@ -65,18 +75,20 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
       try {
         await activePrompt.prompt();
         const choice = await activePrompt.userChoice;
+        setDeferredPrompt(null);
+        (window as any).deferredPwaPrompt = null;
+
         if (choice && choice.outcome === 'accepted') {
           handleDismissBanner();
-          setDeferredPrompt(null);
-          (window as any).deferredPwaPrompt = null;
           setIsModalOpen(false);
-          return;
         }
+        // User interacted with native prompt - do not open instruction modal on cancel!
+        return;
       } catch (err) {
         console.warn('Install prompt error:', err);
       }
     }
-    // If prompt was not accepted or not supported natively without user action, open modal
+    // If native prompt is not available (e.g. iOS or unsupported browser), show step-by-step modal
     setIsModalOpen(true);
   };
 
