@@ -141,12 +141,17 @@ export default function App() {
     Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length
   );
 
+  const [isIOS, setIsIOS] = useState<boolean>(false);
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
   useEffect(() => {
     const inStandaloneMode =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
     setIsStandalone(inStandaloneMode);
+
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    setIsIOS(isIosDevice);
   }, []);
 
   // First-time onboarding language prompt
@@ -154,10 +159,28 @@ export default function App() {
     return !localStorage.getItem('us_plate_game_has_chosen_lang_v1');
   });
 
+  // First-time PWA install prompt
+  const [showPwaOnboarding, setShowPwaOnboarding] = useState<boolean>(() => {
+    const hasChosenLang = Boolean(localStorage.getItem('us_plate_game_has_chosen_lang_v1'));
+    const pwaDismissed = Boolean(localStorage.getItem('us_plate_pwa_onboarding_dismissed_v1'));
+    const inStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+    return hasChosenLang && !pwaDismissed && !inStandalone;
+  });
+
   const handleSelectInitialLanguage = (lang: 'he' | 'en') => {
     setSettings((s) => ({ ...s, language: lang }));
     localStorage.setItem('us_plate_game_has_chosen_lang_v1', 'true');
     setShowLangOnboarding(false);
+
+    const pwaDismissed = Boolean(localStorage.getItem('us_plate_pwa_onboarding_dismissed_v1'));
+    const inStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+    if (!pwaDismissed && !inStandalone) {
+      setShowPwaOnboarding(true);
+    }
   };
 
   const handleOpenShareModal = (st?: StateInfo | null) => {
@@ -966,6 +989,91 @@ export default function App() {
               >
                 <span className="text-2xl">🇮🇱</span>
                 <span>עברית (Hebrew)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* First-Time PWA Installation Onboarding Modal */}
+      {!showLangOnboarding && showPwaOnboarding && !isStandalone && (
+        <div
+          id="pwa-onboarding-modal"
+          className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+          dir={settings.language === 'he' ? 'rtl' : 'ltr'}
+        >
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4.5 my-auto animate-scale-up">
+            <div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto shadow-md border border-slate-200 p-0.5 bg-slate-50">
+              <img src="/app-icon.png" alt="App Icon" className="w-full h-full object-cover rounded-xl" />
+            </div>
+
+            <div className="space-y-1.5">
+              <h3 className="text-lg font-black text-slate-900 leading-snug">
+                {settings.language === 'he'
+                  ? 'אני עובדת הרבה יותר מוצלח אם מורידים אותי לדף הבית 😊'
+                  : 'I work much better if you download me to your Home Screen 😊'}
+              </h3>
+              <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                {settings.language === 'he'
+                  ? 'גישה מהירה בלחיצה אחת, מסך מלא ללא סרגל דפדפן, וחוויית משחק חלקה!'
+                  : '1-click quick access, full screen without browser bar, and smooth gameplay!'}
+              </p>
+            </div>
+
+            {/* Platform-specific content */}
+            {!isIOS ? (
+              /* Android / Desktop Chrome button */
+              <div className="space-y-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('open-pwa-install-modal'));
+                  }}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Download className="w-5 h-5 text-slate-950" />
+                  <span>{settings.language === 'he' ? 'הורד עכשיו למכשיר' : 'Download Now'}</span>
+                </button>
+              </div>
+            ) : (
+              /* iOS Safari step-by-step instructions */
+              <div className="space-y-2.5 text-start text-xs font-semibold text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-amber-500 text-slate-950 font-black flex items-center justify-center text-xs shrink-0">
+                    1
+                  </span>
+                  <span>
+                    {settings.language === 'he'
+                      ? 'לחץ על כפתור השיתוף בתחתית המסך ב-Safari 📤'
+                      : 'Tap Share button at the bottom of Safari 📤'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-amber-500 text-slate-950 font-black flex items-center justify-center text-xs shrink-0">
+                    2
+                  </span>
+                  <span>
+                    {settings.language === 'he'
+                      ? 'גלול ובחר "הוסף למסך הבית" ➕'
+                      : 'Scroll and tap "Add to Home Screen" ➕'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Bottom small link: "אני ממש מתעקש להשתמש בדפדפן" */}
+            <div className="pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.setItem('us_plate_pwa_onboarding_dismissed_v1', 'true');
+                  setShowPwaOnboarding(false);
+                }}
+                className="text-xs text-slate-400 hover:text-slate-600 font-bold underline transition-colors cursor-pointer"
+              >
+                {settings.language === 'he'
+                  ? 'אני ממש מתעקש להשתמש בדפדפן'
+                  : 'I really insist on using the browser'}
               </button>
             </div>
           </div>
