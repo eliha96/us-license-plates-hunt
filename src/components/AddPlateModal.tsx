@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StateInfo, SpottedRecord } from '../types';
 import { STATES_DATA } from '../data/statesData';
+import { compressImage } from '../utils/storage';
 import { US_REGIONS } from '../data/regionsData';
 import {
   CANADA_PROVINCES_DATA,
@@ -100,22 +101,28 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
   const currentState = ALL_COMBINED[selectedStateId] || initialState || STATES_DATA['CA'];
   const currentRegion = US_REGIONS[currentState.region];
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isCompressing, setIsCompressing] = useState<boolean>(false);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert(language === 'he' ? 'גודל הקובץ גדול מ-5MB' : 'File size exceeds 5MB');
-      return;
+    try {
+      setIsCompressing(true);
+      const compressedBase64 = await compressImage(file, 800, 800, 0.7);
+      setPhotoUrl(compressedBase64);
+    } catch (err) {
+      console.error('Image compression failed, using fallback', err);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === 'string') {
+          setPhotoUrl(event.target.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setIsCompressing(false);
     }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (typeof event.target?.result === 'string') {
-        setPhotoUrl(event.target.result);
-      }
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleGetCurrentLocation = () => {
@@ -275,7 +282,12 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
               )}
             </label>
 
-            {photoUrl ? (
+            {isCompressing ? (
+              <div className="flex flex-col items-center justify-center border-2 border-dashed border-indigo-300 bg-indigo-50/40 rounded-2xl p-4 min-h-[90px] text-indigo-700 font-bold text-xs gap-1.5 animate-pulse">
+                <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
+                <span>{language === 'he' ? 'דוחס וממטב תמונה למניעת עומס...' : 'Optimizing photo for storage...'}</span>
+              </div>
+            ) : photoUrl ? (
               <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-40 bg-slate-100 shadow-inner">
                 <img
                   src={photoUrl}
@@ -293,7 +305,7 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
                   {language === 'he' ? 'צלם במצלמה או העלה תמונה' : 'Take a photo or upload file'}
                 </span>
                 <span className="text-[10px] text-slate-400 mt-0.5">
-                  JPG, PNG, WebP
+                  JPG, PNG, WebP (אוטומטית ממטב גודל)
                 </span>
                 <input
                   id="plate-photo-input"
