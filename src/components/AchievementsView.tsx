@@ -1,17 +1,25 @@
 import React from 'react';
-import { SpottedRecord, StateInfo } from '../types';
+import { SpottedRecord } from '../types';
 import { STATES_DATA } from '../data/statesData';
 import { REGIONS } from '../data/regionsData';
+import { ACHIEVEMENTS } from '../data/achievements';
 import {
   Trophy,
   Award,
-  Calendar,
   Clock,
   CheckCircle2,
   Lock,
   Sparkles,
   Compass,
   Flag,
+  Trees,
+  Snowflake,
+  Sun,
+  Waves,
+  Grid,
+  Palmtree,
+  Camera,
+  MapPin,
 } from 'lucide-react';
 
 interface AchievementsViewProps {
@@ -19,119 +27,21 @@ interface AchievementsViewProps {
   language?: 'he' | 'en';
 }
 
-interface AchievementBadge {
-  id: string;
-  title: string;
-  titleHe: string;
-  desc: string;
-  descHe: string;
-  icon: string;
-  isUnlocked: (spotted: Record<string, SpottedRecord>) => boolean;
-  progress: (spotted: Record<string, SpottedRecord>) => { current: number; total: number };
-}
-
-const ACHIEVEMENT_BADGES: AchievementBadge[] = [
-  {
-    id: 'first',
-    title: 'First Plate',
-    titleHe: 'לוחית ראשונה',
-    desc: 'Find your first state',
-    descHe: 'תעדו את המדינה הראשונה שלכם',
-    icon: '🚗',
-    isUnlocked: (spotted) => Object.keys(spotted).length >= 1,
-    progress: (spotted) => ({ current: Math.min(1, Object.keys(spotted).length), total: 1 }),
-  },
-  {
-    id: 'ten',
-    title: '10 States',
-    titleHe: '10 מדינות',
-    desc: 'Find 10 different states',
-    descHe: 'מצאו 10 מדינות שונות',
-    icon: '🔟',
-    isUnlocked: (spotted) => Object.keys(spotted).length >= 10,
-    progress: (spotted) => ({ current: Math.min(10, Object.keys(spotted).length), total: 10 }),
-  },
-  {
-    id: 'half',
-    title: 'Halfway There',
-    titleHe: 'חצי הדרך (25)',
-    desc: 'Find 25 states',
-    descHe: 'הגיעו ל-25 מדינות באוסף',
-    icon: '⭐',
-    isUnlocked: (spotted) => Object.keys(spotted).length >= 25,
-    progress: (spotted) => ({ current: Math.min(25, Object.keys(spotted).length), total: 25 }),
-  },
-  {
-    id: 'thirty',
-    title: '30 States',
-    titleHe: '30 מדינות',
-    desc: 'Find 30 states',
-    descHe: 'מצאו 30 מדינות שונות',
-    icon: '🎯',
-    isUnlocked: (spotted) => Object.keys(spotted).length >= 30,
-    progress: (spotted) => ({ current: Math.min(30, Object.keys(spotted).length), total: 30 }),
-  },
-  {
-    id: 'forty',
-    title: '40 States',
-    titleHe: '40 מדינות',
-    desc: 'Find 40 states',
-    descHe: 'מצאו 40 מדינות שונות',
-    icon: '🚀',
-    isUnlocked: (spotted) => Object.keys(spotted).length >= 40,
-    progress: (spotted) => ({ current: Math.min(40, Object.keys(spotted).length), total: 40 }),
-  },
-  {
-    id: 'fifty',
-    title: '50/50',
-    titleHe: 'גרנד סלאם (50/50)',
-    desc: 'Find all 50 states',
-    descHe: 'מצאו את כל 50 המדינות בארה״ב!',
-    icon: '👑',
-    isUnlocked: (spotted) => Object.keys(spotted).length >= 50,
-    progress: (spotted) => ({ current: Math.min(50, Object.keys(spotted).length), total: 50 }),
-  },
-  {
-    id: 'east',
-    title: 'East Coast Explorer',
-    titleHe: 'סייר החוף המזרחי',
-    desc: 'Find 6 Northeastern states',
-    descHe: 'מצאו 6 מדינות מצפון-מזרח ארה״ב',
-    icon: '🗽',
-    isUnlocked: (spotted) => {
-      const northeastStates = Object.keys(spotted).filter(
-        (id) => STATES_DATA[id]?.region === 'Northeast'
-      );
-      return northeastStates.length >= 6;
-    },
-    progress: (spotted) => {
-      const cur = Object.keys(spotted).filter(
-        (id) => STATES_DATA[id]?.region === 'Northeast'
-      ).length;
-      return { current: Math.min(6, cur), total: 6 };
-    },
-  },
-  {
-    id: 'cross',
-    title: 'Cross-Country Collector',
-    titleHe: 'חוצה יבשות',
-    desc: 'Find states in all 4 regions',
-    descHe: 'מצאו מדינה בכל אחד מ-4 האזורים',
-    icon: '🧭',
-    isUnlocked: (spotted) => {
-      const regionsFound = new Set(
-        Object.keys(spotted).map((id) => STATES_DATA[id]?.region).filter(Boolean)
-      );
-      return regionsFound.size >= 4;
-    },
-    progress: (spotted) => {
-      const regionsFound = new Set(
-        Object.keys(spotted).map((id) => STATES_DATA[id]?.region).filter(Boolean)
-      );
-      return { current: regionsFound.size, total: 4 };
-    },
-  },
-];
+const ICON_MAP: Record<string, React.ReactNode> = {
+  Flag: <Flag className="w-5 h-5 text-indigo-600" />,
+  Compass: <Compass className="w-5 h-5 text-indigo-600" />,
+  Trees: <Trees className="w-5 h-5 text-emerald-600" />,
+  Snowflake: <Snowflake className="w-5 h-5 text-sky-500" />,
+  Sun: <Sun className="w-5 h-5 text-amber-500" />,
+  Grid: <Grid className="w-5 h-5 text-indigo-600" />,
+  Waves: <Waves className="w-5 h-5 text-cyan-600" />,
+  Palmtree: <Palmtree className="w-5 h-5 text-amber-600" />,
+  Camera: <Camera className="w-5 h-5 text-violet-600" />,
+  MapPin: <MapPin className="w-5 h-5 text-rose-500" />,
+  Award: <Award className="w-5 h-5 text-amber-500" />,
+  Sparkles: <Sparkles className="w-5 h-5 text-amber-500" />,
+  Trophy: <Trophy className="w-5 h-5 text-amber-500" />,
+};
 
 const REGION_COLORS: Record<string, string> = {
   Northeast: '#6366f1',
@@ -145,11 +55,11 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
   language = 'he',
 }) => {
   const records = Object.values(spottedRecords) as SpottedRecord[];
-  const foundCount = records.length;
+  const foundCount = Object.keys(spottedRecords).filter((id) => STATES_DATA[id]).length;
   const remainingCount = 50 - foundCount;
 
   // Unlocked badges
-  const unlockedBadges = ACHIEVEMENT_BADGES.filter((b) => b.isUnlocked(spottedRecords));
+  const unlockedBadges = ACHIEVEMENTS.filter((b) => b.checkUnlocked(spottedRecords));
 
   // First found & Latest found
   const sortedRecords = [...records].sort(
@@ -229,7 +139,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
           <div className="text-xl font-black text-slate-800 mt-0.5">
             {unlockedBadges.length}
             <span className="text-sm font-semibold text-slate-400">
-              /{ACHIEVEMENT_BADGES.length}
+              /{ACHIEVEMENTS.length}
             </span>
           </div>
           <div className="text-[10px] text-slate-400">
@@ -324,9 +234,9 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
         </div>
 
         <div className="space-y-2">
-          {ACHIEVEMENT_BADGES.map((badge) => {
-            const unlocked = badge.isUnlocked(spottedRecords);
-            const { current, total } = badge.progress(spottedRecords);
+          {ACHIEVEMENTS.map((badge) => {
+            const unlocked = badge.checkUnlocked(spottedRecords);
+            const { current, total } = badge.calculateProgress(spottedRecords);
             const pct = Math.round((current / total) * 100);
 
             return (
@@ -345,13 +255,13 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                       : 'bg-slate-100 border border-slate-200 text-slate-400 grayscale'
                   }`}
                 >
-                  {badge.icon}
+                  {ICON_MAP[badge.icon] || <Trophy className="w-5 h-5 text-amber-500" />}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-1">
                     <h3 className="font-extrabold text-slate-800 text-sm truncate">
-                      {language === 'he' ? badge.titleHe : badge.title}
+                      {language === 'he' ? badge.titleHe : badge.titleEn}
                     </h3>
                     {unlocked ? (
                       <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-0.5 shrink-0">
@@ -367,7 +277,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                   </div>
 
                   <p className="text-xs text-slate-500 mt-0.5 truncate">
-                    {language === 'he' ? badge.descHe : badge.desc}
+                    {language === 'he' ? badge.descriptionHe : badge.descriptionEn}
                   </p>
 
                   {!unlocked && (
