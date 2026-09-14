@@ -125,7 +125,7 @@ export const SightingsPageView: React.FC<SightingsPageViewProps> = ({
                     {/* Details */}
                     <div
                       onClick={() => onSelectRecord(rec)}
-                      className="flex-1 min-w-0 cursor-pointer text-left"
+                      className="flex-1 min-w-0 cursor-pointer text-start"
                     >
                       <div className="font-extrabold text-slate-800 text-sm truncate flex items-center gap-1.5">
                         <span>{st ? (language === 'he' ? st.nameHe : st.name) : rec.stateId}</span>

@@ -180,7 +180,7 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
               </div>
             ) : isIOS ? (
               /* iOS Safari Steps */
-              <div className="space-y-2.5 text-right text-xs font-semibold text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+              <div className="space-y-2.5 text-start text-xs font-semibold text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
                 <div className="flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-amber-500 text-slate-950 font-black flex items-center justify-center text-xs shrink-0">
                     1
@@ -204,7 +204,7 @@ export const InstallPwaBanner: React.FC<InstallPwaBannerProps> = ({ language = '
               </div>
             ) : (
               /* Android / Desktop Chrome / General browser steps */
-              <div className="space-y-2.5 text-right text-xs font-semibold text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+              <div className="space-y-2.5 text-start text-xs font-semibold text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
                 <div className="flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-xs shrink-0">
                     1

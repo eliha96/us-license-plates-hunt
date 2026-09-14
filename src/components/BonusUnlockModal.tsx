@@ -101,7 +101,7 @@ export const BonusUnlockModal: React.FC<BonusUnlockModalProps> = ({
 
         {/* Instructions Box */}
         <div
-          className={`rounded-2xl p-4 text-xs font-medium text-left leading-relaxed space-y-2.5 border shadow-inner ${
+          className={`rounded-2xl p-4 text-xs font-medium text-start leading-relaxed space-y-2.5 border shadow-inner ${
             isCanada
               ? 'bg-amber-50/90 border-amber-200 text-amber-950'
               : 'bg-emerald-50/90 border-emerald-200 text-emerald-950'

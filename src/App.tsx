@@ -366,7 +366,7 @@ export default function App() {
           <div>
             <h1 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
               <img src="/app-icon.png" alt="App Logo" className="w-8 h-8 rounded-xl object-cover shadow-xs border border-slate-200/80 shrink-0" />
-              <span>{settings.language === 'he' ? 'ציד לוחיות רישוי' : '50 State Plate Hunt'}</span>
+              <span>🚗 {settings.language === 'he' ? 'ציד לוחיות רישוי' : '50 State Plate Hunt'}</span>
             </h1>
             <p className="text-xs text-slate-500 font-medium">
               {settings.language === 'he'

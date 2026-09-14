@@ -180,7 +180,7 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
     >
       <div
         id="add-plate-modal-card"
-        className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden ring-1 ring-slate-200 my-auto text-left"
+        className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden ring-1 ring-slate-200 my-auto text-start"
         dir={language === 'he' ? 'rtl' : 'ltr'}
         onClick={(e) => e.stopPropagation()}
       >

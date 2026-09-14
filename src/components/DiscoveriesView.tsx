@@ -364,7 +364,7 @@ export const DiscoveriesView: React.FC<DiscoveriesViewProps> = ({
                       if (onOpenSightingDetails) onOpenSightingDetails(rec);
                       else if (st) onSelectState(st);
                     }}
-                    className="rounded-2xl overflow-hidden ring-1 ring-slate-200/80 bg-white text-left shadow-2xs hover:shadow-xs transition-all flex flex-col group active:scale-98"
+                    className="rounded-2xl overflow-hidden ring-1 ring-slate-200/80 bg-white text-start shadow-2xs hover:shadow-xs transition-all flex flex-col group active:scale-98"
                   >
                     <div className="h-28 w-full bg-slate-100 relative overflow-hidden flex items-center justify-center">
                       {rec.photoUrl ? (
