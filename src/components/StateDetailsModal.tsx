@@ -155,11 +155,13 @@ export const StateDetailsModal: React.FC<StateDetailsModalProps> = ({
           {/* Photo or State Plate Graphic */}
           <div className="rounded-2xl overflow-hidden ring-1 ring-slate-200 bg-slate-100 shadow-inner">
             {record?.photoUrl ? (
-              <img
-                src={record.photoUrl}
-                alt={state.name}
-                className="w-full h-44 object-cover"
-              />
+              <div className="w-full h-52 sm:h-60 bg-slate-900 flex items-center justify-center overflow-hidden">
+                <img
+                  src={record.photoUrl}
+                  alt={state.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
             ) : (
               /* Authentic American License Plate Graphic */
               <div className="p-3 bg-gradient-to-b from-slate-100 to-slate-200 flex items-center justify-center">

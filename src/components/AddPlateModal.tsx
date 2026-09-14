@@ -137,13 +137,39 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
     setLocationError('');
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setIsGettingLocation(false);
+      async (pos) => {
         const latitude = parseFloat(pos.coords.latitude.toFixed(4));
         const longitude = parseFloat(pos.coords.longitude.toFixed(4));
         setLat(latitude);
         setLng(longitude);
-        const autoLoc = `${latitude}, ${longitude}`;
+
+        let placeName = '';
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=${language === 'he' ? 'he,en' : 'en'}`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const addr = data.address || {};
+            const road = addr.road || addr.highway || addr.pedestrian;
+            const city = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || addr.county;
+            const stateName = addr.state;
+
+            const parts: string[] = [];
+            if (road) parts.push(road);
+            if (city) parts.push(city);
+            if (stateName) parts.push(stateName);
+
+            if (parts.length > 0) {
+              placeName = parts.join(', ');
+            }
+          }
+        } catch {
+          // Geocoding fallback if offline or restricted
+        }
+
+        setIsGettingLocation(false);
+        const autoLoc = placeName || `${latitude}, ${longitude}`;
         setLocation((prev) => (prev ? `${prev} (${autoLoc})` : autoLoc));
       },
       () => {
@@ -287,11 +313,11 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
                 <span>{language === 'he' ? 'דוחס וממטב תמונה...' : 'Optimizing photo...'}</span>
               </div>
             ) : photoUrl ? (
-              <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-28 bg-slate-100 shadow-inner">
+              <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-48 sm:h-52 bg-slate-900 shadow-inner group">
                 <img
                   src={photoUrl}
                   alt="Uploaded plate"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
             ) : (
