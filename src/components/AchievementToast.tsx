@@ -4,16 +4,22 @@ import { Trophy, Sparkles, X } from 'lucide-react';
 
 interface AchievementToastProps {
   achievement: Achievement | null;
-  onDismiss: () => void;
+  onClose?: () => void;
+  onDismiss?: () => void;
   language?: 'he' | 'en';
 }
 
 export const AchievementToast: React.FC<AchievementToastProps> = ({
   achievement,
+  onClose,
   onDismiss,
   language = 'he',
 }) => {
   if (!achievement) return null;
+  const handleClose = () => {
+    if (onClose) onClose();
+    if (onDismiss) onDismiss();
+  };
 
   return (
     <div
@@ -42,8 +48,8 @@ export const AchievementToast: React.FC<AchievementToastProps> = ({
       <button
         id="btn-dismiss-toast"
         type="button"
-        onClick={onDismiss}
-        className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors shrink-0"
+        onClick={handleClose}
+        className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors shrink-0 cursor-pointer"
       >
         <X className="w-4 h-4" />
       </button>

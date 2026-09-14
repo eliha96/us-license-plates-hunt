@@ -180,18 +180,18 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
     >
       <div
         id="add-plate-modal-card"
-        className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden ring-1 ring-slate-200 my-auto text-start"
+        className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden ring-1 ring-slate-200 my-auto text-start flex flex-col max-h-[88vh]"
         dir={language === 'he' ? 'rtl' : 'ltr'}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white flex items-center justify-between">
+        <div className="p-4 sm:p-4.5 bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center font-black text-white text-base shadow-inner">
               {currentState.id}
             </div>
             <div>
-              <h2 id="modal-title" className="text-lg font-extrabold text-white leading-tight">
+              <h2 id="modal-title" className="text-base sm:text-lg font-extrabold text-white leading-tight">
                 {existingRecord
                   ? language === 'he'
                     ? `עריכת תיעוד - ${currentState.nameHe}`
@@ -200,7 +200,7 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
                   ? `הוספת תגלית - ${currentState.nameHe}`
                   : `Add Discovery - ${currentState.name}`}
               </h2>
-              <p className="text-xs text-indigo-100">
+              <p className="text-[11px] text-indigo-100">
                 {language === 'he'
                   ? 'תעדו לוחית רישוי חדשה במסע שלכם'
                   : 'Log a new license plate discovery'}
@@ -217,7 +217,8 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+        {/* Scrollable Form Body */}
+        <form id="add-plate-form" onSubmit={handleSubmit} className="p-4 space-y-3 overflow-y-auto flex-1 min-h-0">
           {/* State Selector with Search */}
           <div>
             <label
@@ -230,7 +231,7 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
               id="state-select"
               value={selectedStateId}
               onChange={(e) => setSelectedStateId(e.target.value)}
-              className="w-full px-3.5 py-3 text-base sm:text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800"
+              className="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800"
             >
               <optgroup label={language === 'he' ? '🇺🇸 ארצות הברית (50 מדינות)' : '🇺🇸 United States (50 States)'}>
                 {Object.values(STATES_DATA).map((s) => (
@@ -266,14 +267,14 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
               <span className="flex items-center gap-1">
-                <Camera className="w-4 h-4 text-indigo-500" />
-                {language === 'he' ? 'תמונת הלוחית מהדרך' : 'License Plate Photo'}
+                <Camera className="w-3.5 h-3.5 text-indigo-500" />
+                {language === 'he' ? 'תמונת הלוחית (אופציונלי)' : 'License Plate Photo (Optional)'}
               </span>
               {photoUrl && (
                 <button
                   type="button"
                   onClick={() => setPhotoUrl('')}
-                  className="text-xs text-rose-600 hover:underline font-bold"
+                  className="text-[11px] text-rose-600 hover:underline font-bold"
                 >
                   {language === 'he' ? 'הסר תמונה' : 'Remove'}
                 </button>
@@ -281,12 +282,12 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
             </label>
 
             {isCompressing ? (
-              <div className="flex flex-col items-center justify-center border-2 border-dashed border-indigo-300 bg-indigo-50/40 rounded-2xl p-4 min-h-[90px] text-indigo-700 font-bold text-xs gap-1.5 animate-pulse">
-                <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
-                <span>{language === 'he' ? 'דוחס וממטב תמונה למניעת עומס...' : 'Optimizing photo for storage...'}</span>
+              <div className="flex flex-col items-center justify-center border-2 border-dashed border-indigo-300 bg-indigo-50/40 rounded-2xl p-3 min-h-[70px] text-indigo-700 font-bold text-xs gap-1 animate-pulse">
+                <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                <span>{language === 'he' ? 'דוחס וממטב תמונה...' : 'Optimizing photo...'}</span>
               </div>
             ) : photoUrl ? (
-              <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-40 bg-slate-100 shadow-inner">
+              <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-28 bg-slate-100 shadow-inner">
                 <img
                   src={photoUrl}
                   alt="Uploaded plate"
@@ -296,15 +297,17 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
             ) : (
               <label
                 htmlFor="plate-photo-input"
-                className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50 hover:bg-indigo-50/50 rounded-2xl p-4 cursor-pointer transition-all min-h-[90px]"
+                className="flex items-center justify-center gap-2 border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50 hover:bg-indigo-50/50 rounded-2xl p-2.5 cursor-pointer transition-all min-h-[60px]"
               >
-                <Camera className="w-6 h-6 text-indigo-500 mb-1" />
-                <span className="text-xs font-bold text-slate-700">
-                  {language === 'he' ? 'צלם במצלמה או העלה תמונה' : 'Take a photo or upload file'}
-                </span>
-                <span className="text-[10px] text-slate-400 mt-0.5">
-                  JPG, PNG, WebP (אוטומטית ממטב גודל)
-                </span>
+                <Camera className="w-5 h-5 text-indigo-500 shrink-0" />
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-slate-700 block truncate">
+                    {language === 'he' ? 'צלם במצלמה או העלה תמונה' : 'Take a photo or upload file'}
+                  </span>
+                  <span className="text-[10px] text-slate-400 block truncate">
+                    JPG, PNG, WebP (ממוטב אוטומטית)
+                  </span>
+                </div>
                 <input
                   id="plate-photo-input"
                   type="file"
@@ -317,24 +320,6 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
             )}
           </div>
 
-          {/* Date & Time */}
-          <div>
-            <label
-              htmlFor="spotted-at-input"
-              className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1"
-            >
-              <Calendar className="w-4 h-4 text-slate-400" />
-              {language === 'he' ? 'תאריך ושעת התצפית' : 'Date & Time Spotted'}
-            </label>
-            <input
-              id="spotted-at-input"
-              type="datetime-local"
-              value={spottedAt}
-              onChange={(e) => setSpottedAt(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-base sm:text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
           {/* Location */}
           <div>
             <div className="flex items-center justify-between mb-1">
@@ -342,21 +327,21 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
                 htmlFor="location-input"
                 className="text-xs font-bold text-slate-700 flex items-center gap-1"
               >
-                <MapPin className="w-4 h-4 text-slate-400" />
+                <MapPin className="w-3.5 h-3.5 text-slate-400" />
                 {language === 'he' ? 'איפה ראית אותה?' : 'Where did you spot it?'}
               </label>
               <button
                 type="button"
                 onClick={handleGetCurrentLocation}
                 disabled={isGettingLocation}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-indigo-50 disabled:opacity-50 cursor-pointer"
+                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 py-0.5 px-1.5 rounded-lg hover:bg-indigo-50 disabled:opacity-50 cursor-pointer"
               >
                 {isGettingLocation ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-3 h-3 animate-spin" />
                 ) : (
-                  <Navigation className="w-3.5 h-3.5" />
+                  <Navigation className="w-3 h-3" />
                 )}
-                {language === 'he' ? 'קבל GPS נוכחי' : 'Use Current GPS'}
+                {language === 'he' ? 'GPS נוכחי' : 'GPS'}
               </button>
             </div>
             <input
@@ -366,14 +351,32 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
               onChange={(e) => setLocation(e.target.value)}
               placeholder={
                 language === 'he'
-                  ? 'כביש 66 ליד סליגמן / חניון בפארק יוטה'
-                  : 'Route 66 near Flagstaff / Highway rest area'
+                  ? 'כביש 66 / חניון בפארק'
+                  : 'Route 66 / Rest stop'
               }
-              className="w-full px-3.5 py-2.5 text-base sm:text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
             />
             {locationError && (
-              <p className="text-xs text-rose-500 mt-1">{locationError}</p>
+              <p className="text-[11px] text-rose-500 mt-1">{locationError}</p>
             )}
+          </div>
+
+          {/* Date & Time */}
+          <div>
+            <label
+              htmlFor="spotted-at-input"
+              className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1"
+            >
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              {language === 'he' ? 'תאריך ושעת התצפית' : 'Date & Time Spotted'}
+            </label>
+            <input
+              id="spotted-at-input"
+              type="datetime-local"
+              value={spottedAt}
+              onChange={(e) => setSpottedAt(e.target.value)}
+              className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+            />
           </div>
 
           {/* Notes */}
@@ -382,75 +385,75 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
               htmlFor="notes-input"
               className="block text-xs font-bold text-slate-700 mb-1"
             >
-              {language === 'he' ? 'הערה מהנסיעה' : 'Note'}
+              {language === 'he' ? 'הערה מהנסיעה (אופציונלי)' : 'Note (Optional)'}
             </label>
             <textarea
               id="notes-input"
-              rows={2}
+              rows={1}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={
                 language === 'he'
-                  ? 'איזה רכב זה היה? מי ראה ראשון? זיכרון מהדרך...'
-                  : 'What kind of car? Who spotted it first?'
+                  ? 'סוג רכב, זיכרון מהדרך...'
+                  : 'Car type, trip memory...'
               }
-              className="w-full px-3.5 py-2.5 text-base sm:text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500 resize-none"
+              className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500 resize-none"
             />
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-100 gap-2">
-            {existingRecord && onDelete ? (
-              <button
-                id="btn-delete-plate"
-                type="button"
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      language === 'he'
-                        ? 'האם למחוק את תיעוד הלוחית?'
-                        : 'Delete this sighting?'
-                    )
-                  ) {
-                    onDelete(selectedStateId);
-                    onClose();
-                  }
-                }}
-                className="h-11 px-3.5 py-2 text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-2xl transition-colors flex items-center gap-1.5 active:scale-95"
-              >
-                <Trash2 className="w-4 h-4" />
-                {language === 'he' ? 'מחק' : 'Delete'}
-              </button>
-            ) : (
-              <div />
-            )}
-
-            <div className="flex items-center gap-2">
-              <button
-                id="btn-cancel-modal"
-                type="button"
-                onClick={onClose}
-                className="h-11 px-4 py-2 text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-2xl transition-colors"
-              >
-                {language === 'he' ? 'ביטול' : 'Cancel'}
-              </button>
-              <button
-                id="btn-save-plate-submit"
-                type="submit"
-                className="h-11 px-6 py-2 text-xs sm:text-sm font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl shadow-md transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
-              >
-                <Check className="w-4 h-4 stroke-[3]" />
-                {existingRecord
-                  ? language === 'he'
-                    ? 'עדכן פרטים'
-                    : 'Save changes'
-                  : language === 'he'
-                  ? 'שמור תגלית!'
-                  : 'Save discovery!'}
-              </button>
-            </div>
-          </div>
         </form>
+
+        {/* Sticky Action Footer - ALWAYS VISIBLE WITHOUT SCROLLING! */}
+        <div className="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2 shrink-0">
+          {existingRecord && onDelete ? (
+            <button
+              id="btn-delete-plate"
+              type="button"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    language === 'he'
+                      ? 'האם למחוק את תיעוד הלוחית?'
+                      : 'Delete this sighting?'
+                  )
+                ) {
+                  onDelete(selectedStateId);
+                  onClose();
+                }
+              }}
+              className="h-11 px-3.5 py-2 text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-2xl transition-colors flex items-center gap-1.5 active:scale-95 cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+              {language === 'he' ? 'מחק' : 'Delete'}
+            </button>
+          ) : (
+            <button
+              id="btn-cancel-modal"
+              type="button"
+              onClick={onClose}
+              className="h-11 px-4 py-2 text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-200/60 rounded-2xl transition-colors cursor-pointer"
+            >
+              {language === 'he' ? 'ביטול' : 'Cancel'}
+            </button>
+          )}
+
+          <button
+            id="btn-save-plate-submit"
+            type="submit"
+            form="add-plate-form"
+            className="h-11 px-6 py-2 text-xs sm:text-sm font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer flex-1"
+          >
+            <Check className="w-4 h-4 stroke-[3]" />
+            <span>
+              {existingRecord
+                ? language === 'he'
+                  ? 'עדכן פרטים'
+                  : 'Save changes'
+                : language === 'he'
+                ? 'שמור תגלית!'
+                : 'Save discovery!'}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
