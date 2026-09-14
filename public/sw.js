@@ -1,4 +1,4 @@
-const CACHE_NAME = 'plate-hunt-v1';
+const CACHE_NAME = 'plate-hunt-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
