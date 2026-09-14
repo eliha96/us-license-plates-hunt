@@ -246,11 +246,6 @@ export const US_MAP_PATHS: Record<string, StatePath> = {
     path: 'M618.3,172.1 L658.9,175.4 L656.3,197.2 L665.4,198.6 L660.1,215.3 L638.4,208.5 L625.4,192.4 Z',
     center: [640, 190],
   },
-  DC: {
-    id: 'DC',
-    path: 'M642.5,198.1 L646.2,198.1 L646.2,201.8 L642.5,201.8 Z',
-    center: [644, 200],
-  },
   // Insets for Alaska & Hawaii
   AK: {
     id: 'AK',

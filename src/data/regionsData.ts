@@ -64,7 +64,7 @@ export const US_REGIONS: Record<Region, RegionDefinition> = {
     badgeText: 'text-rose-800 dark:text-rose-300',
     badgeBorder: 'border-rose-200 dark:border-rose-800',
     dotColorClass: 'bg-rose-500',
-    stateIds: ['TX', 'OK', 'AR', 'LA', 'MS', 'TN', 'KY', 'AL', 'GA', 'FL', 'SC', 'NC', 'VA', 'WV', 'MD', 'DE', 'DC'],
+    stateIds: ['TX', 'OK', 'AR', 'LA', 'MS', 'TN', 'KY', 'AL', 'GA', 'FL', 'SC', 'NC', 'VA', 'WV', 'MD', 'DE'],
   },
   Northeast: {
     id: 'Northeast',

@@ -335,11 +335,11 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: 'Trophy',
     category: 'milestone',
     checkUnlocked: (spotted) => {
-      const main50 = Object.keys(STATES_DATA).filter((id) => id !== 'DC');
+      const main50 = Object.keys(STATES_DATA);
       return main50.every((id) => Boolean(spotted[id]));
     },
     calculateProgress: (spotted) => {
-      const main50 = Object.keys(STATES_DATA).filter((id) => id !== 'DC');
+      const main50 = Object.keys(STATES_DATA);
       const count = main50.filter((id) => Boolean(spotted[id])).length;
       return { current: count, total: 50 };
     },
