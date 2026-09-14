@@ -18,8 +18,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+      window.deferredPwaPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.deferredPwaPrompt = e;
+        window.dispatchEvent(new CustomEvent('pwa-prompt-captured'));
+      });
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').catch(function(err) {
+            console.warn('SW registration failed:', err);
+          });
+        });
+      }
+    </script>
   </head>
-  <body class="bg-stone-100 text-stone-900 antialiased font-['Heebo',sans-serif]">
+  <body class="bg-slate-100 text-slate-900 antialiased font-['Heebo',sans-serif]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
