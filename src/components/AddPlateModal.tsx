@@ -33,6 +33,7 @@ interface AddPlateModalProps {
   onSave: (record: SpottedRecord) => void;
   onDelete?: (stateId: string) => void;
   language?: 'he' | 'en';
+  isTutorialMode?: boolean;
 }
 
 const ALL_COMBINED: Record<string, StateInfo> = {
@@ -49,6 +50,7 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
   onSave,
   onDelete,
   language = 'he',
+  isTutorialMode = false,
 }) => {
   const [selectedStateId, setSelectedStateId] = useState<string>(initialState?.id || 'CA');
   const [location, setLocation] = useState<string>('');
@@ -186,6 +188,10 @@ export const AddPlateModal: React.FC<AddPlateModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isTutorialMode) {
+      onClose();
+      return;
+    }
     const record: SpottedRecord = {
       stateId: selectedStateId,
       spottedAt: spottedAt ? new Date(spottedAt).toISOString() : new Date().toISOString(),

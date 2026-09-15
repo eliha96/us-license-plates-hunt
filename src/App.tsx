@@ -30,6 +30,7 @@ import {
 } from './data/bonusData';
 import { InstallPwaBanner } from './components/InstallPwaBanner';
 import { BonusUnlockModal } from './components/BonusUnlockModal';
+import { Tutorial } from './components/Tutorial';
 
 import {
   Car,
@@ -134,6 +135,10 @@ export default function App() {
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
   const [shareTargetState, setShareTargetState] = useState<StateInfo | null>(null);
+  const [showTutorial, setShowTutorial] = useState<boolean>(() => {
+    return !localStorage.getItem('us_plate_game_tutorial_completed_v1');
+  });
+  const [isTutorialMode, setIsTutorialMode] = useState<boolean>(false);
 
   // Bonus milestone unlocks toast state
   const [bonusUnlockToast, setBonusUnlockToast] = useState<{ type: 'canada' | 'mexico' } | null>(null);
@@ -168,6 +173,13 @@ export default function App() {
       (window.navigator as any).standalone === true;
     return hasChosenLang && !pwaDismissed && !inStandalone;
   });
+
+  useEffect(() => {
+    // Only trigger tutorial if language and PWA screens are passed
+    if (!showLangOnboarding && !showPwaOnboarding && !localStorage.getItem('us_plate_game_tutorial_completed_v1')) {
+      setShowTutorial(true);
+    }
+  }, [showLangOnboarding, showPwaOnboarding]);
 
   const handleSelectInitialLanguage = (lang: 'he' | 'en') => {
     setSettings((s) => ({ ...s, language: lang }));
@@ -693,6 +705,7 @@ export default function App() {
 
               {/* Big Prominent Action Button */}
               <button
+                id="btn-add-discovery-main"
                 type="button"
                 onClick={() => {
                   setSelectedState(null);
@@ -924,10 +937,12 @@ export default function App() {
         onClose={() => {
           setIsAddModalOpen(false);
           setSelectedRecordForEdit(null);
+          setIsTutorialMode(false);
         }}
         onSave={handleSaveRecord}
         onDelete={handleDeleteRecord}
         language={settings.language}
+        isTutorialMode={isTutorialMode}
       />
 
       {/* Share Graphic Card Modal */}
@@ -948,6 +963,25 @@ export default function App() {
           achievement={unlockedToast}
           onClose={() => setUnlockedToast(null)}
           language={settings.language}
+        />
+      )}
+
+      {/* Tutorial Overlay */}
+      {showTutorial && (
+        <Tutorial
+          language={settings.language}
+          onFinish={() => {
+            setShowTutorial(false);
+            localStorage.setItem('us_plate_game_tutorial_completed_v1', 'true');
+          }}
+          onSkip={() => {
+            setShowTutorial(false);
+            localStorage.setItem('us_plate_game_tutorial_completed_v1', 'true');
+          }}
+          onOpenAddPlate={() => {
+            setIsTutorialMode(true);
+            setIsAddModalOpen(true);
+          }}
         />
       )}
 

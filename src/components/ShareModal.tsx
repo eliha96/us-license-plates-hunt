@@ -50,7 +50,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         pixelRatio: 2,
         cacheBust: true,
         crossOrigin: 'anonymous',
-      });
+      } as any);
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       return { blob, dataUrl };
