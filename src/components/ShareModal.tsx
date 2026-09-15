@@ -43,9 +43,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const generatePngBlob = async (): Promise<{ blob: Blob; dataUrl: string } | null> => {
     if (!hiddenCardRef.current) return null;
     try {
+      // Small delay to ensure images are loaded
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const dataUrl = await htmlToImage.toPng(hiddenCardRef.current, {
         pixelRatio: 2,
         cacheBust: true,
+        crossOrigin: 'anonymous',
       });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
