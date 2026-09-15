@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
-import { ArrowRight, ArrowLeft, Play, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Play } from 'lucide-react';
 import { sounds } from '../utils/audio';
 
 interface TutorialProps {
@@ -198,20 +198,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
             onClick={() => {
               handleNext();
             }}
-          >
-            {/* Click me indicator badge */}
-            {currentStepData.targetKey === 'add-btn' && (
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                transition={{ repeat: Infinity, duration: 1.8 }}
-                className="absolute -top-10 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 font-black text-[11px] px-3 py-1 rounded-full shadow-lg flex items-center gap-1 border border-white whitespace-nowrap"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-slate-950" />
-                <span>{language === 'he' ? 'לחץ כאן!' : 'Click here!'}</span>
-              </motion.div>
-            )}
-          </motion.div>
+          />
         )}
 
         {/* Floating Tooltip Box */}
