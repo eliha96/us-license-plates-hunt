@@ -483,7 +483,10 @@ export default function App() {
           {activeTab === 'hunt' && (
             <div className="space-y-4">
               {/* Hero Progress Card */}
-              <div className="rounded-3xl bg-gradient-to-br from-white via-white to-indigo-50/30 p-4 sm:p-5 shadow-xs border border-slate-200/80 flex items-center gap-4.5">
+              <div
+                data-tour-target="hero-progress"
+                className="rounded-3xl bg-gradient-to-br from-white via-white to-indigo-50/30 p-4 sm:p-5 shadow-xs border border-slate-200/80 flex items-center gap-4.5"
+              >
                 <CircularProgressRing
                   value={foundCount}
                   total={50}
@@ -785,6 +788,7 @@ export default function App() {
         {/* Modern Frosted Glass Bottom Navigation Bar with Central Floating Action Button */}
         <nav
           id="app-bottom-nav"
+          data-tour-target="nav-tabs"
           className="fixed bottom-0 inset-x-0 z-40 max-w-md mx-auto border-t border-slate-200/80 bg-white/90 backdrop-blur-xl px-2 py-1.5 flex items-center justify-around shadow-lg shadow-slate-900/5"
         >
           {/* 1: Hunt */}
@@ -838,7 +842,7 @@ export default function App() {
           </button>
 
           {/* Center: Prominent Elevated Floating "+" Action Button */}
-          <div className="flex-1 flex justify-center -mt-6">
+          <div data-tour-target="add-btn" className="flex-1 flex justify-center -mt-6">
             <button
               type="button"
               onClick={() => {
